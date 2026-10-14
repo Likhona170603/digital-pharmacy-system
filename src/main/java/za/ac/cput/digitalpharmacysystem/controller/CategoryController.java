@@ -5,7 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import za.ac.cput.digitalpharmacysystem.domain.Category;
+import za.ac.cput.digitalpharmacysystem.factory.CategoryFactory;
 import za.ac.cput.digitalpharmacysystem.service.ICategoryService;
+import za.ac.cput.digitalpharmacysystem.service.IProductService;
 
 import java.util.List;
 
@@ -18,16 +20,32 @@ import java.util.List;
 public class CategoryController {
 
     private final ICategoryService service;
+    private final IProductService productService;
 
     @Autowired
-    public CategoryController(ICategoryService service) {
+    public CategoryController(ICategoryService service, IProductService productService) {
         this.service = service;
+        this.productService = productService;
+    }
+
+    private Category validated(Category c) {
+        if (c == null) {
+            return null;
+        }
+        return CategoryFactory.createCategory(
+                c.getCategoryId(), c.getCategoryName(), c.getDosageForm(), c.getScheduleClassification());
     }
 
     @PostMapping("/create")
     public ResponseEntity<Category> create(@RequestBody Category category) {
-        Category created = service.create(category);
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
+        Category valid = validated(category);
+        if (valid == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        if (service.read(valid.getCategoryId()) != null) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity<>(service.create(valid), HttpStatus.CREATED);
     }
 
     @GetMapping("/read/{id}")
@@ -41,7 +59,11 @@ public class CategoryController {
 
     @PostMapping("/update")
     public ResponseEntity<Category> update(@RequestBody Category category) {
-        Category updated = service.update(category);
+        Category valid = validated(category);
+        if (valid == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        Category updated = service.update(valid);
         if (updated == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -50,10 +72,14 @@ public class CategoryController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
-        boolean deleted = service.delete(id);
-        if (!deleted) {
+        if (service.read(id) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
+        if (!productService.getByCategoryId(id).isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        service.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

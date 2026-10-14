@@ -52,4 +52,9 @@ public class ProductService implements IProductService {
     public List<Product> getAll() {
         return this.repository.findAll();
     }
+
+    @Override
+    public List<Product> getByCategoryId(String categoryId) {
+        return this.repository.findByCategory_CategoryId(categoryId);
+    }
 }

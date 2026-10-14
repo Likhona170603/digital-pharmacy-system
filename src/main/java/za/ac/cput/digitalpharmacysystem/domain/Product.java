@@ -1,5 +1,6 @@
 package za.ac.cput.digitalpharmacysystem.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -16,9 +17,13 @@ public class Product {
     private String productName;
     private String description;
     private double price;
+    @Column(unique = true, nullable = false)
     private String sku;
     private int stockQuantity;
-    private boolean isRxRequired;
+
+
+    @Column(name = "is_rx_required")
+    private boolean rxRequired;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
@@ -33,7 +38,7 @@ public class Product {
         this.price = builder.price;
         this.sku = builder.sku;
         this.stockQuantity = builder.stockQuantity;
-        this.isRxRequired = builder.isRxRequired;
+        this.rxRequired = builder.rxRequired;
         this.category = builder.category;
     }
 
@@ -62,7 +67,7 @@ public class Product {
     }
 
     public boolean isRxRequired() {
-        return isRxRequired;
+        return rxRequired;
     }
 
     public Category getCategory() {
@@ -78,7 +83,7 @@ public class Product {
                 ", price=" + price +
                 ", sku='" + sku + '\'' +
                 ", stockQuantity=" + stockQuantity +
-                ", isRxRequired=" + isRxRequired +
+                ", isRxRequired=" + rxRequired +
                 ", category=" + category +
                 '}';
     }
@@ -90,7 +95,7 @@ public class Product {
         private double price;
         private String sku;
         private int stockQuantity;
-        private boolean isRxRequired;
+        private boolean rxRequired;
         private Category category;
 
         public Builder setProductId(String productId) {
@@ -124,7 +129,7 @@ public class Product {
         }
 
         public Builder setIsRxRequired(boolean isRxRequired) {
-            this.isRxRequired = isRxRequired;
+            this.rxRequired = isRxRequired;
             return this;
         }
 
@@ -140,7 +145,7 @@ public class Product {
             this.price = product.price;
             this.sku = product.sku;
             this.stockQuantity = product.stockQuantity;
-            this.isRxRequired = product.isRxRequired;
+            this.rxRequired = product.rxRequired;
             this.category = product.category;
             return this;
         }
