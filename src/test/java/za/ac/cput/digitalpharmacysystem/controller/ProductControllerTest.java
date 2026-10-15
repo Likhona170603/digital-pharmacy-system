@@ -2,8 +2,7 @@ package za.ac.cput.digitalpharmacysystem.controller;
 
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.*;
 import za.ac.cput.digitalpharmacysystem.domain.Category;
@@ -17,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * Asenathi Nini
  * 230452817
  */
-@AutoConfigureTestRestTemplate
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ProductControllerTest {
