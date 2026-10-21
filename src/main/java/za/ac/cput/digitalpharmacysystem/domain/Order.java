@@ -23,6 +23,7 @@ public class Order {
     protected Order() {
     }
 
+
     private Order(Builder builder) {
         this.orderNumber = builder.orderNumber;
         this.customerId = builder.customerId;
