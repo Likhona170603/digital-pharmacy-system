@@ -4,39 +4,42 @@ import za.ac.cput.digitalpharmacysystem.domain.Prescription;
 import za.ac.cput.digitalpharmacysystem.domain.VerificationStatus;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.UUID;
-
-/*
- * Likhona Noroyita
- * 230154239
-
- */
 
 public class PrescriptionFactory {
 
     public static Prescription createPrescription(
             String patientId,
-            String uploadedFilePath,
-            LocalDate issuedDate){
+            String filePath,
+            LocalDate issuedDate) {
 
-        if (patientId == null || patientId.isBlank()){
-            return null;
+        if (patientId == null || patientId.trim().isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Patient ID is required"
+            );
         }
-        if (uploadedFilePath == null || uploadedFilePath.isBlank()){
-            return null;
+
+        if (filePath == null || filePath.trim().isEmpty()) {
+            throw new IllegalArgumentException(
+                    "File path is required"
+            );
         }
-        if (issuedDate == null){
-            return null;
+
+        if (issuedDate == null) {
+            throw new IllegalArgumentException(
+                    "Issued date is required"
+            );
         }
+
         return new Prescription.Builder()
-                .setPatientId(UUID.randomUUID().toString())
+                .setPrescriptionId(UUID.randomUUID().toString())
                 .setPatientId(patientId)
-                .setUploadedFilePath(uploadedFilePath)
+                .setFilePath(filePath)
                 .setIssuedDate(issuedDate)
-                .setUploadedAt(LocalDateTime.now())
-                .setVerificationStatus(VerificationStatus.PENDING)
+                .setVerificationStatus(
+                        VerificationStatus.PENDING
+                )
+                .setRejectionReason(null)
                 .build();
-
     }
 }
