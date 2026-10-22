@@ -1,7 +1,7 @@
 package za.ac.cput.digitalpharmacysystem.domain;
 /*
  * Sibulele Pama
- * 221447498
+ * 221447598
  */
 
 import jakarta.persistence.Entity;
@@ -16,9 +16,12 @@ public class Order {
     private String orderNumber;
     private String customerId;
     private double totalAmt;
-    private String orderType;
-    private String orderStatus;
-    private String paymentStatus;
+
+    private OrderType orderType;
+
+    private OrderStatus orderStatus;
+
+    private PaymentStatus paymentStatus;
 
     protected Order() {
     }
@@ -41,9 +44,9 @@ public class Order {
         private String orderNumber;
         private String customerId;
         private double totalAmt;
-        private String orderType;
-        private String orderStatus;
-        private String paymentStatus;
+        private OrderType orderType;
+        private OrderStatus orderStatus;
+        private PaymentStatus paymentStatus;
 
         public Builder setOrderNumber(String orderNumber) {
             this.orderNumber = orderNumber;
@@ -60,17 +63,17 @@ public class Order {
             return this;
         }
 
-        public Builder setOrderType(String orderType) {
+        public Builder setOrderType(OrderType orderType) {
             this.orderType = orderType;
             return this;
         }
 
-        public Builder setOrderStatus(String orderStatus) {
+        public Builder setOrderStatus(OrderStatus orderStatus) {
             this.orderStatus = orderStatus;
             return this;
         }
 
-        public Builder setPaymentStatus(String paymentStatus) {
+        public Builder setPaymentStatus(PaymentStatus paymentStatus) {
             this.paymentStatus = paymentStatus;
             return this;
         }
@@ -93,15 +96,15 @@ public class Order {
         return totalAmt;
     }
 
-    public String getOrderType() {
+    public OrderType getOrderType() {
         return orderType;
     }
 
-    public String getOrderStatus() {
+    public OrderStatus getOrderStatus() {
         return orderStatus;
     }
 
-    public String getPaymentStatus() {
+    public PaymentStatus getPaymentStatus() {
         return paymentStatus;
     }
 }
