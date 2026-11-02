@@ -1,28 +1,50 @@
 package za.ac.cput.digitalpharmacysystem.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import za.ac.cput.digitalpharmacysystem.domain.Prescription;
+import za.ac.cput.digitalpharmacysystem.domain.RefillTracker;
 import za.ac.cput.digitalpharmacysystem.domain.VerificationStatus;
+import za.ac.cput.digitalpharmacysystem.factory.RefillTrackerFactory;
 import za.ac.cput.digitalpharmacysystem.repository.IPrescriptionRepository;
+import za.ac.cput.digitalpharmacysystem.repository.IRefillTrackerRepository;
+import za.ac.cput.digitalpharmacysystem.util.ActorContext;
+import za.ac.cput.digitalpharmacysystem.util.Helper;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class PrescriptionService
         implements IPrescriptionService {
 
     private final IPrescriptionRepository repository;
+    // The repository (not IRefillTrackerService) is used here because
+    // RefillTrackerService already depends on this service.
+    private final IRefillTrackerRepository refillRepository;
+    private final IAuditLogService auditLogService;
+    private final ActorContext actorContext;
 
     public PrescriptionService(
-            IPrescriptionRepository repository) {
+            IPrescriptionRepository repository,
+            IRefillTrackerRepository refillRepository,
+            IAuditLogService auditLogService,
+            ActorContext actorContext) {
 
         this.repository = repository;
+        this.refillRepository = refillRepository;
+        this.auditLogService = auditLogService;
+        this.actorContext = actorContext;
     }
 
     @Override
     public Prescription create(Prescription prescription) {
-        return repository.save(prescription);
+        Prescription saved = repository.save(prescription);
+        auditLogService.record("PRESCRIPTION_UPLOADED", "Prescription", saved.getPrescriptionId());
+        return saved;
     }
 
     @Override
@@ -32,12 +54,19 @@ public class PrescriptionService
 
     @Override
     public Prescription update(Prescription prescription) {
-        return repository.save(prescription);
+        if (repository.existsById(prescription.getPrescriptionId())) {
+            return repository.save(prescription);
+        }
+        return null;
     }
 
     @Override
-    public void delete(String id) {
-        repository.deleteById(id);
+    public boolean delete(String id) {
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -61,23 +90,15 @@ public class PrescriptionService
     }
 
     @Override
-    public Prescription approvePrescription(String id) {
+    @Transactional
+    public Prescription approvePrescription(
+            String id,
+            int refillsAllowed,
+            String verifiedBy) {
 
-        Prescription prescription = read(id);
+        Prescription prescription = findOrThrow(id);
 
-        if (prescription == null) {
-            throw new IllegalArgumentException(
-                    "Prescription not found"
-            );
-        }
-
-        if (prescription.getVerificationStatus()
-                != VerificationStatus.PENDING) {
-
-            throw new IllegalStateException(
-                    "Only pending prescriptions can be approved"
-            );
-        }
+        requireDecidable(prescription, "approved");
 
         prescription.setVerificationStatus(
                 VerificationStatus.APPROVED
@@ -85,46 +106,122 @@ public class PrescriptionService
 
         prescription.setRejectionReason(null);
 
-        return repository.save(prescription);
+        stamp(prescription, verifiedBy);
+
+        Prescription saved = repository.save(prescription);
+
+        // The pharmacist decides how many times it can be dispensed (at least once).
+        if (refillRepository.findByPrescriptionId(id).isEmpty()) {
+            RefillTracker tracker = RefillTrackerFactory.createRefillTracker(
+                    id,
+                    Math.max(1, refillsAllowed),
+                    LocalDate.now()
+            );
+            refillRepository.save(tracker);
+        }
+
+        auditLogService.record("PRESCRIPTION_APPROVED", "Prescription", id);
+
+        return saved;
     }
 
     @Override
+    @Transactional
     public Prescription rejectPrescription(
             String id,
-            String rejectionReason) {
+            String rejectionReason,
+            String verifiedBy) {
 
-        if (rejectionReason == null ||
-                rejectionReason.trim().isEmpty()) {
+        return decide(
+                id,
+                rejectionReason,
+                verifiedBy,
+                VerificationStatus.REJECTED,
+                "rejected",
+                "PRESCRIPTION_REJECTED"
+        );
+    }
+
+    @Override
+    @Transactional
+    public Prescription requestClarification(
+            String id,
+            String reason,
+            String verifiedBy) {
+
+        return decide(
+                id,
+                reason,
+                verifiedBy,
+                VerificationStatus.NEEDS_CLARIFICATION,
+                "sent back for clarification",
+                "PRESCRIPTION_NEEDS_CLARIFICATION"
+        );
+    }
+
+    private Prescription decide(
+            String id,
+            String reason,
+            String verifiedBy,
+            VerificationStatus status,
+            String verb,
+            String auditAction) {
+
+        if (reason == null || reason.trim().isEmpty()) {
 
             throw new IllegalArgumentException(
-                    "Rejection reason is required"
+                    "A reason is required"
             );
         }
 
-        Prescription prescription = read(id);
+        Prescription prescription = findOrThrow(id);
 
-        if (prescription == null) {
-            throw new IllegalArgumentException(
-                    "Prescription not found"
-            );
-        }
+        requireDecidable(prescription, verb);
 
-        if (prescription.getVerificationStatus()
-                != VerificationStatus.PENDING) {
+        prescription.setVerificationStatus(status);
+
+        prescription.setRejectionReason(reason);
+
+        stamp(prescription, verifiedBy);
+
+        Prescription saved = repository.save(prescription);
+
+        auditLogService.record(auditAction, "Prescription", id);
+
+        return saved;
+    }
+
+    private void requireDecidable(Prescription prescription, String verb) {
+        VerificationStatus status = prescription.getVerificationStatus();
+
+        if (status != VerificationStatus.PENDING
+                && status != VerificationStatus.NEEDS_CLARIFICATION) {
 
             throw new IllegalStateException(
-                    "Only pending prescriptions can be rejected"
+                    "Only pending prescriptions can be " + verb
+                            + " (this one is " + status + ")"
             );
         }
+    }
 
-        prescription.setVerificationStatus(
-                VerificationStatus.REJECTED
-        );
+    private void stamp(Prescription prescription, String verifiedBy) {
+        String by = verifiedBy;
 
-        prescription.setRejectionReason(
-                rejectionReason
-        );
+        if (Helper.isNullOrEmpty(by) && actorContext.getActorId() != null) {
+            by = String.valueOf(actorContext.getActorId());
+        }
 
-        return repository.save(prescription);
+        prescription.setVerifiedBy(by);
+        prescription.setVerifiedAt(LocalDateTime.now());
+    }
+
+    private Prescription findOrThrow(String id) {
+        Prescription prescription = read(id);
+        if (prescription == null) {
+            throw new NoSuchElementException(
+                    "Prescription not found: " + id
+            );
+        }
+        return prescription;
     }
 }

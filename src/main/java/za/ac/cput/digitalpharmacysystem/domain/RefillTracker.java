@@ -3,6 +3,8 @@ package za.ac.cput.digitalpharmacysystem.domain;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDate;
 
 @Entity
@@ -49,6 +51,18 @@ public class RefillTracker {
 
     public LocalDate getNextEligibleDate() {
         return nextEligibleDate;
+    }
+
+    /** Worked out from the other fields, not stored. */
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public RefillStatus getRefillStatus() {
+        if (refillsUsed >= totalRefillsAllowed) {
+            return RefillStatus.COMPLETED;
+        }
+        if (nextEligibleDate != null && nextEligibleDate.isAfter(LocalDate.now())) {
+            return RefillStatus.NOT_ELIGIBLE;
+        }
+        return RefillStatus.AVAILABLE;
     }
 
     public void setRefillsUsed(int refillsUsed) {

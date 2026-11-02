@@ -21,6 +21,10 @@ public class Product {
     private String sku;
     private int stockQuantity;
 
+    // false = hidden from the catalogue and cannot be ordered. Existing rows default to true.
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean active = true;
+
 
     @Column(name = "is_rx_required")
     private boolean rxRequired;
@@ -38,6 +42,7 @@ public class Product {
         this.price = builder.price;
         this.sku = builder.sku;
         this.stockQuantity = builder.stockQuantity;
+        this.active = builder.active;
         this.rxRequired = builder.rxRequired;
         this.category = builder.category;
     }
@@ -64,6 +69,10 @@ public class Product {
 
     public int getStockQuantity() {
         return stockQuantity;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 
     public boolean isRxRequired() {
@@ -96,6 +105,7 @@ public class Product {
         private String sku;
         private int stockQuantity;
         private boolean rxRequired;
+        private boolean active = true;
         private Category category;
 
         public Builder setProductId(String productId) {
@@ -138,6 +148,11 @@ public class Product {
             return this;
         }
 
+        public Builder setActive(boolean active) {
+            this.active = active;
+            return this;
+        }
+
         public Builder copy(Product product) {
             this.productId = product.productId;
             this.productName = product.productName;
@@ -147,6 +162,7 @@ public class Product {
             this.stockQuantity = product.stockQuantity;
             this.rxRequired = product.rxRequired;
             this.category = product.category;
+            this.active = product.active;
             return this;
         }
 

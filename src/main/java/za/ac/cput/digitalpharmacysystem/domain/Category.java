@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
  * [Asenathi Nini]
  * [230452817]
  */
+
 @Entity
 public class Category {
     @Id

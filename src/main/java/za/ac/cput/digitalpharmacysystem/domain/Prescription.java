@@ -6,6 +6,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 public class Prescription {
@@ -24,6 +25,13 @@ public class Prescription {
 
     private String rejectionReason;
 
+    // The medicine this prescription covers (matched against the product at checkout).
+    private String productId;
+
+    private String verifiedBy;
+
+    private LocalDateTime verifiedAt;
+
     protected Prescription() {
         // Required by JPA
     }
@@ -35,6 +43,9 @@ public class Prescription {
         this.issuedDate = builder.issuedDate;
         this.verificationStatus = builder.verificationStatus;
         this.rejectionReason = builder.rejectionReason;
+        this.productId = builder.productId;
+        this.verifiedBy = builder.verifiedBy;
+        this.verifiedAt = builder.verifiedAt;
     }
 
     public String getPrescriptionId() {
@@ -61,6 +72,26 @@ public class Prescription {
         return rejectionReason;
     }
 
+    public String getProductId() {
+        return productId;
+    }
+
+    public String getVerifiedBy() {
+        return verifiedBy;
+    }
+
+    public LocalDateTime getVerifiedAt() {
+        return verifiedAt;
+    }
+
+    public void setVerifiedBy(String verifiedBy) {
+        this.verifiedBy = verifiedBy;
+    }
+
+    public void setVerifiedAt(LocalDateTime verifiedAt) {
+        this.verifiedAt = verifiedAt;
+    }
+
     public void setVerificationStatus(VerificationStatus verificationStatus) {
         this.verificationStatus = verificationStatus;
     }
@@ -77,6 +108,9 @@ public class Prescription {
         private LocalDate issuedDate;
         private VerificationStatus verificationStatus;
         private String rejectionReason;
+        private String productId;
+        private String verifiedBy;
+        private LocalDateTime verifiedAt;
 
         public Builder setPrescriptionId(String prescriptionId) {
             this.prescriptionId = prescriptionId;
@@ -107,6 +141,21 @@ public class Prescription {
 
         public Builder setRejectionReason(String rejectionReason) {
             this.rejectionReason = rejectionReason;
+            return this;
+        }
+
+        public Builder setProductId(String productId) {
+            this.productId = productId;
+            return this;
+        }
+
+        public Builder setVerifiedBy(String verifiedBy) {
+            this.verifiedBy = verifiedBy;
+            return this;
+        }
+
+        public Builder setVerifiedAt(LocalDateTime verifiedAt) {
+            this.verifiedAt = verifiedAt;
             return this;
         }
 

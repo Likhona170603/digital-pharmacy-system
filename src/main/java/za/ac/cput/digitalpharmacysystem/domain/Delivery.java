@@ -11,6 +11,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import java.time.LocalDateTime;
+
 
 
 /*
@@ -39,6 +41,10 @@ public class Delivery {
     @JoinColumn(name = "courier_id")
     private User courier;
 
+    private LocalDateTime dispatchedAt;
+    private LocalDateTime deliveredAt;
+    private String recipientName;
+
     protected Delivery() {}
 
     private Delivery(Builder builder) {
@@ -48,6 +54,9 @@ public class Delivery {
         this.status = builder.status;
         this.order = builder.order;
         this.courier = builder.courier;
+        this.dispatchedAt = builder.dispatchedAt;
+        this.deliveredAt = builder.deliveredAt;
+        this.recipientName = builder.recipientName;
     }
 
     public String getId() {
@@ -72,6 +81,30 @@ public class Delivery {
 
     public User getCourier() {
         return courier;
+    }
+
+    public LocalDateTime getDispatchedAt() {
+        return dispatchedAt;
+    }
+
+    public LocalDateTime getDeliveredAt() {
+        return deliveredAt;
+    }
+
+    public String getRecipientName() {
+        return recipientName;
+    }
+
+    public void setDispatchedAt(LocalDateTime dispatchedAt) {
+        this.dispatchedAt = dispatchedAt;
+    }
+
+    public void setDeliveredAt(LocalDateTime deliveredAt) {
+        this.deliveredAt = deliveredAt;
+    }
+
+    public void setRecipientName(String recipientName) {
+        this.recipientName = recipientName;
     }
 
     public void setStatus(DeliveryStatus status) {
@@ -107,6 +140,9 @@ public class Delivery {
         private DeliveryStatus status;
         private Order order;
         private User courier;
+        private LocalDateTime dispatchedAt;
+        private LocalDateTime deliveredAt;
+        private String recipientName;
 
         public Builder setId(String id) {
             this.id = id;
@@ -135,6 +171,21 @@ public class Delivery {
 
         public Builder setCourier(User courier) {
             this.courier = courier;
+            return this;
+        }
+
+        public Builder setDispatchedAt(LocalDateTime dispatchedAt) {
+            this.dispatchedAt = dispatchedAt;
+            return this;
+        }
+
+        public Builder setDeliveredAt(LocalDateTime deliveredAt) {
+            this.deliveredAt = deliveredAt;
+            return this;
+        }
+
+        public Builder setRecipientName(String recipientName) {
+            this.recipientName = recipientName;
             return this;
         }
 

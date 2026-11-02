@@ -1,6 +1,7 @@
 package za.ac.cput.digitalpharmacysystem.domain;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.io.Serializable;
 import java.util.Objects;
@@ -21,6 +22,8 @@ public class User implements Serializable{
     @Column(nullable = false, unique = true)
     private String email;
 
+    // WRITE_ONLY: accepted when a user is created, but never sent back in JSON responses.
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
     private String passwordHash;
 

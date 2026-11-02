@@ -6,11 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import za.ac.cput.digitalpharmacysystem.domain.Delivery;
 import za.ac.cput.digitalpharmacysystem.domain.DeliveryStatus;
-import za.ac.cput.digitalpharmacysystem.service.IAuditLogService;
 import za.ac.cput.digitalpharmacysystem.service.IDeliveryService;
-import za.ac.cput.digitalpharmacysystem.domain.AuditLog;
-import java.time.LocalDateTime;
-import java.util.UUID;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -20,21 +16,16 @@ import java.util.List;
 /*
  * Sesona Ntshatsha
  * 240773365
-
  */
 
 @RestController
 @RequestMapping("/digitalpharmacysystem/delivery")
 public class DeliveryController {
     private final IDeliveryService service;
-    private final IAuditLogService auditLogService;
 
     @Autowired
-    public DeliveryController(
-            IDeliveryService service,
-            IAuditLogService auditLogService) {
+    public DeliveryController(IDeliveryService service) {
         this.service = service;
-        this.auditLogService = auditLogService;
     }
 
     @PostMapping("/create")
@@ -81,35 +72,18 @@ public class DeliveryController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<Delivery> updateStatus(
             @PathVariable String id,
-            @RequestParam DeliveryStatus status) {
+            @RequestParam DeliveryStatus status,
+            @RequestParam(required = false) String recipientName) {
 
-        Delivery delivery = service.read(id);
+        return new ResponseEntity<>(service.updateStatus(id, status, recipientName), HttpStatus.OK);
+    }
 
-        if (delivery == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @PutMapping("/{id}/courier/{courierId}")
+    public ResponseEntity<Delivery> assignCourier(
+            @PathVariable String id,
+            @PathVariable Long courierId) {
 
-        DeliveryStatus oldStatus = delivery.getStatus();
-
-        delivery.setStatus(status);
-
-        Delivery updated = service.update(delivery);
-
-        if (updated == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        AuditLog auditLog = new AuditLog.Builder()
-                .setId(UUID.randomUUID().toString())
-                .setAction("Delivery status changed from "
-                        + oldStatus + " to " + status)
-                .setEntityTarget("Delivery ID: " + id)
-                .setTimeStamp(LocalDateTime.now())
-                .build();
-
-        auditLogService.create(auditLog);
-
-        return new ResponseEntity<>(updated, HttpStatus.OK);
+        return new ResponseEntity<>(service.assignCourier(id, courierId), HttpStatus.OK);
     }
 
     @GetMapping("/order/{orderNumber}")

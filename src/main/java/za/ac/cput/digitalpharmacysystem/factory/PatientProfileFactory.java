@@ -24,4 +24,11 @@ public class PatientProfileFactory {
                 .build();
     }
 
+    public static PatientProfile buildPatientProfile(User user, LocalDate dateOfBirth, String allergies, String chronicConditions, String emergencyContactName, String emergencyContactPhone) {
+        PatientProfile base = buildPatientProfile(user, dateOfBirth, allergies, chronicConditions, emergencyContactPhone);
+        if (base == null) {
+            return null;
+        }
+        return new PatientProfile.Builder().copy(base).setEmergencyContactName(emergencyContactName).build();
+    }
 }

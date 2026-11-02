@@ -2,19 +2,7 @@ package za.ac.cput.digitalpharmacysystem.service;
 
 import za.ac.cput.digitalpharmacysystem.domain.RefillTracker;
 
-import java.util.List;
-
-public interface IRefillTrackerService {
-
-    RefillTracker create(RefillTracker tracker);
-
-    RefillTracker read(String id);
-
-    RefillTracker update(RefillTracker tracker);
-
-    void delete(String id);
-
-    List<RefillTracker> getAll();
+public interface IRefillTrackerService extends IService<RefillTracker, String> {
 
     RefillTracker getByPrescriptionId(
             String prescriptionId
@@ -25,6 +13,11 @@ public interface IRefillTrackerService {
     );
 
     RefillTracker processRefill(
+            String prescriptionId
+    );
+
+    /** Gives back one refill (used when an order that consumed it is cancelled). */
+    RefillTracker restoreRefill(
             String prescriptionId
     );
 }

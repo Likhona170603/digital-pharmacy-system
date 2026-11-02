@@ -5,5 +5,12 @@ public enum OrderStatus {
     PROCESSING,
     SHIPPED,
     DELIVERED,
-    CANCELLED
+    CANCELLED,
+
+    // Appended last on purpose: Order stores this enum by position (ordinal),
+    // so existing values must keep their place. Add new values below, never above.
+    PACKED,
+    READY_FOR_COLLECTION,
+    COLLECTED
 }
+

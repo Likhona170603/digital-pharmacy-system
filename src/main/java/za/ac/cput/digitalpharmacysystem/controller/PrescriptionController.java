@@ -10,7 +10,7 @@ import za.ac.cput.digitalpharmacysystem.service.IPrescriptionService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/prescriptions")
+@RequestMapping({"/digitalpharmacysystem/prescription", "/api/prescriptions"})
 public class PrescriptionController {
 
     private final IPrescriptionService service;
@@ -78,29 +78,56 @@ public class PrescriptionController {
     public ResponseEntity<Prescription> update(
             @RequestBody Prescription prescription) {
 
-        return ResponseEntity.ok(
-                service.update(prescription)
-        );
+        Prescription updated = service.update(prescription);
+
+        if (updated == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(updated);
     }
 
     @PutMapping("/{id}/approve")
     public ResponseEntity<Prescription> approve(
-            @PathVariable String id) {
+            @PathVariable String id,
+            @RequestParam(defaultValue = "1") int refills,
+            @RequestParam(required = false) String verifiedBy) {
 
         return ResponseEntity.ok(
-                service.approvePrescription(id)
+                service.approvePrescription(
+                        id,
+                        refills,
+                        verifiedBy
+                )
         );
     }
 
     @PutMapping("/{id}/reject")
     public ResponseEntity<Prescription> reject(
             @PathVariable String id,
-            @RequestParam String reason) {
+            @RequestParam String reason,
+            @RequestParam(required = false) String verifiedBy) {
 
         return ResponseEntity.ok(
                 service.rejectPrescription(
                         id,
-                        reason
+                        reason,
+                        verifiedBy
+                )
+        );
+    }
+
+    @PutMapping("/{id}/clarify")
+    public ResponseEntity<Prescription> clarify(
+            @PathVariable String id,
+            @RequestParam String reason,
+            @RequestParam(required = false) String verifiedBy) {
+
+        return ResponseEntity.ok(
+                service.requestClarification(
+                        id,
+                        reason,
+                        verifiedBy
                 )
         );
     }
@@ -109,7 +136,9 @@ public class PrescriptionController {
     public ResponseEntity<Void> delete(
             @PathVariable String id) {
 
-        service.delete(id);
+        if (!service.delete(id)) {
+            return ResponseEntity.notFound().build();
+        }
 
         return ResponseEntity.noContent().build();
     }

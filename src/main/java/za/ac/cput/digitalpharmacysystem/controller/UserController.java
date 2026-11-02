@@ -11,7 +11,7 @@ import java.util.List;
 //Author: 221066748 (Noxolo Portia Ngubo)
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/digitalpharmacysystem/user")
 public class UserController {
 
     private final IUserService userService;

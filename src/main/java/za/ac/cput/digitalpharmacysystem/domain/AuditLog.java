@@ -17,6 +17,9 @@ public class AuditLog {
     private String action;
     private String entityTarget;
     private LocalDateTime timeStamp;
+    private Long actorId;
+    private String actorRole;
+    private String entityId;
 
     protected AuditLog() {}
 
@@ -25,6 +28,9 @@ public class AuditLog {
         this.action=builder.action;
         this.entityTarget=builder.entityTarget;
         this.timeStamp=builder.timeStamp;
+        this.actorId=builder.actorId;
+        this.actorRole=builder.actorRole;
+        this.entityId=builder.entityId;
     }
     public String getId() {
         return id;
@@ -37,6 +43,15 @@ public class AuditLog {
     }
     public LocalDateTime getTimeStamp() {
         return timeStamp;
+    }
+    public Long getActorId() {
+        return actorId;
+    }
+    public String getActorRole() {
+        return actorRole;
+    }
+    public String getEntityId() {
+        return entityId;
     }
     @Override
     public String toString() {
@@ -54,6 +69,9 @@ public class AuditLog {
         private String action;
         private String entityTarget;
         private LocalDateTime timeStamp;
+        private Long actorId;
+        private String actorRole;
+        private String entityId;
         public Builder setId(String id) {
             this.id = id;
             return this;
@@ -71,6 +89,18 @@ public class AuditLog {
             this.timeStamp = timeStamp;
             return this;
         }
+        public Builder setActorId(Long actorId) {
+            this.actorId = actorId;
+            return this;
+        }
+        public Builder setActorRole(String actorRole) {
+            this.actorRole = actorRole;
+            return this;
+        }
+        public Builder setEntityId(String entityId) {
+            this.entityId = entityId;
+            return this;
+        }
         public AuditLog build() {
             return new AuditLog(this);
 
@@ -78,5 +108,4 @@ public class AuditLog {
 
         }
     }
-
 }

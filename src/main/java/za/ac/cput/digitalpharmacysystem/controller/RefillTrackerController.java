@@ -10,7 +10,7 @@ import za.ac.cput.digitalpharmacysystem.service.IRefillTrackerService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/refills")
+@RequestMapping("/digitalpharmacysystem/refills")
 public class RefillTrackerController {
 
     private final IRefillTrackerService service;
@@ -77,9 +77,13 @@ public class RefillTrackerController {
     public ResponseEntity<RefillTracker> update(
             @RequestBody RefillTracker tracker) {
 
-        return ResponseEntity.ok(
-                service.update(tracker)
-        );
+        RefillTracker updated = service.update(tracker);
+
+        if (updated == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(updated);
     }
 
     @GetMapping("/eligible/{prescriptionId}")
@@ -108,7 +112,9 @@ public class RefillTrackerController {
     public ResponseEntity<Void> delete(
             @PathVariable String id) {
 
-        service.delete(id);
+        if (!service.delete(id)) {
+            return ResponseEntity.notFound().build();
+        }
 
         return ResponseEntity.noContent().build();
     }

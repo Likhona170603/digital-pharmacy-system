@@ -11,7 +11,7 @@ import java.util.List;
 //Author: 221066748 (Noxolo Portia Ngubo)
 
 @RestController
-@RequestMapping("/patientprofile")
+@RequestMapping("/digitalpharmacysystem/patientprofile")
 public class PatientProfileController {
 
     private final IPatientProfileService profileService;

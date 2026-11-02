@@ -42,4 +42,29 @@ public class PrescriptionFactory {
                 .setRejectionReason(null)
                 .build();
     }
+
+    public static Prescription createPrescription(
+            String patientId,
+            String productId,
+            String filePath,
+            LocalDate issuedDate) {
+
+        if (productId == null || productId.trim().isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Product ID is required"
+            );
+        }
+
+        Prescription base = createPrescription(patientId, filePath, issuedDate);
+
+        return new Prescription.Builder()
+                .setPrescriptionId(base.getPrescriptionId())
+                .setPatientId(base.getPatientId())
+                .setProductId(productId)
+                .setFilePath(base.getFilePath())
+                .setIssuedDate(base.getIssuedDate())
+                .setVerificationStatus(base.getVerificationStatus())
+                .setRejectionReason(null)
+                .build();
+    }
 }

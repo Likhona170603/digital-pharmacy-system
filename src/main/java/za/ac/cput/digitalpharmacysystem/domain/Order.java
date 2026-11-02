@@ -4,9 +4,16 @@ package za.ac.cput.digitalpharmacysystem.domain;
  * 221447598
  */
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -23,6 +30,11 @@ public class Order {
 
     private PaymentStatus paymentStatus;
 
+    private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<OrderItem> items = new ArrayList<>();
+
     protected Order() {
     }
 
@@ -34,6 +46,7 @@ public class Order {
         this.orderType = builder.orderType;
         this.orderStatus = builder.orderStatus;
         this.paymentStatus = builder.paymentStatus;
+        this.createdAt = builder.createdAt;
     }
 
     public String getId() {
@@ -47,6 +60,7 @@ public class Order {
         private OrderType orderType;
         private OrderStatus orderStatus;
         private PaymentStatus paymentStatus;
+        private LocalDateTime createdAt;
 
         public Builder setOrderNumber(String orderNumber) {
             this.orderNumber = orderNumber;
@@ -78,6 +92,11 @@ public class Order {
             return this;
         }
 
+        public Builder setCreatedAt(LocalDateTime createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
         public Order build() {
             return new Order(this);
         }
@@ -106,5 +125,26 @@ public class Order {
 
     public PaymentStatus getPaymentStatus() {
         return paymentStatus;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public List<OrderItem> getItems() {
+        return items;
+    }
+
+
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public void addItem(OrderItem item) {
+        this.items.add(item);
     }
 }

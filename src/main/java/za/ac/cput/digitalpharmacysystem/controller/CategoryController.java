@@ -1,6 +1,5 @@
 package za.ac.cput.digitalpharmacysystem.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +21,6 @@ public class CategoryController {
     private final ICategoryService service;
     private final IProductService productService;
 
-    @Autowired
     public CategoryController(ICategoryService service, IProductService productService) {
         this.service = service;
         this.productService = productService;
@@ -83,9 +81,20 @@ public class CategoryController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/getall")
+    @GetMapping("/getAll")
     public ResponseEntity<List<Category>> getAll() {
         List<Category> categories = service.getAll();
         return new ResponseEntity<>(categories, HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Category>> search(@RequestParam(required = false) String dosageForm,
+                                                 @RequestParam(required = false) String schedule) {
+        return new ResponseEntity<>(service.search(dosageForm, schedule), HttpStatus.OK);
+    }
+
+    @GetMapping("/dosageforms")
+    public ResponseEntity<List<String>> getDosageForms() {
+        return new ResponseEntity<>(service.getDosageForms(), HttpStatus.OK);
     }
 }

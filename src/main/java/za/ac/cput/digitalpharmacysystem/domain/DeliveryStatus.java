@@ -6,6 +6,7 @@ package za.ac.cput.digitalpharmacysystem.domain;
  */
 public enum DeliveryStatus {
     PENDING,
+    PACKED,
     DISPATCHED,
     IN_TRANSIT,
     DELIVERED,

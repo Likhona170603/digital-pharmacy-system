@@ -23,6 +23,7 @@ public class PatientProfile implements Serializable {
     private LocalDate dateOfBirth;
     private String allergies;
     private String chronicConditions;
+    private String emergencyContactName;
     private String emergencyContactPhone;
 
     protected PatientProfile() {}
@@ -33,6 +34,7 @@ public class PatientProfile implements Serializable {
         this.dateOfBirth = builder.dateOfBirth;
         this.allergies = builder.allergies;
         this.chronicConditions = builder.chronicConditions;
+        this.emergencyContactName = builder.emergencyContactName;
         this.emergencyContactPhone = builder.emergencyContactPhone;
     }
 
@@ -41,6 +43,7 @@ public class PatientProfile implements Serializable {
     public LocalDate getDateOfBirth() { return dateOfBirth; }
     public String getAllergies() { return allergies; }
     public String getChronicConditions() { return chronicConditions; }
+    public String getEmergencyContactName() { return emergencyContactName; }
     public String getEmergencyContactPhone() { return emergencyContactPhone; }
 
     public static class Builder {
@@ -49,6 +52,7 @@ public class PatientProfile implements Serializable {
         private LocalDate dateOfBirth;
         private String allergies;
         private String chronicConditions;
+        private String emergencyContactName;
         private String emergencyContactPhone;
 
         public Builder setId(Long id) { this.id = id; return this; }
@@ -56,6 +60,7 @@ public class PatientProfile implements Serializable {
         public Builder setDateOfBirth(LocalDate dateOfBirth) { this.dateOfBirth = dateOfBirth; return this; }
         public Builder setAllergies(String allergies) { this.allergies = allergies; return this; }
         public Builder setChronicConditions(String chronicConditions) { this.chronicConditions = chronicConditions; return this; }
+        public Builder setEmergencyContactName(String emergencyContactName) { this.emergencyContactName = emergencyContactName; return this; }
         public Builder setEmergencyContactPhone(String emergencyContactPhone) { this.emergencyContactPhone = emergencyContactPhone; return this; }
 
         public Builder copy(PatientProfile profile) {
@@ -64,6 +69,7 @@ public class PatientProfile implements Serializable {
             this.dateOfBirth = profile.dateOfBirth;
             this.allergies = profile.allergies;
             this.chronicConditions = profile.chronicConditions;
+            this.emergencyContactName = profile.emergencyContactName;
             this.emergencyContactPhone = profile.emergencyContactPhone;
             return this;
         }

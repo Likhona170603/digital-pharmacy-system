@@ -1,6 +1,5 @@
 package za.ac.cput.digitalpharmacysystem.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import za.ac.cput.digitalpharmacysystem.domain.Category;
 import za.ac.cput.digitalpharmacysystem.repository.CategoryRepository;
@@ -16,7 +15,6 @@ public class CategoryService implements ICategoryService {
 
     private final CategoryRepository repository;
 
-    @Autowired
     public CategoryService(CategoryRepository repository) {
         this.repository = repository;
     }
@@ -51,5 +49,27 @@ public class CategoryService implements ICategoryService {
     @Override
     public List<Category> getAll() {
         return this.repository.findAll();
+    }
+
+    @Override
+    public List<Category> search(String dosageForm, String scheduleClassification) {
+        boolean hasForm = dosageForm != null && !dosageForm.isBlank();
+        boolean hasSchedule = scheduleClassification != null && !scheduleClassification.isBlank();
+        if (hasForm && hasSchedule) {
+            return this.repository.findByDosageFormIgnoreCaseAndScheduleClassificationIgnoreCase(
+                    dosageForm.trim(), scheduleClassification.trim());
+        }
+        if (hasForm) {
+            return this.repository.findByDosageFormIgnoreCase(dosageForm.trim());
+        }
+        if (hasSchedule) {
+            return this.repository.findByScheduleClassificationIgnoreCase(scheduleClassification.trim());
+        }
+        return this.repository.findAll();
+    }
+
+    @Override
+    public List<String> getDosageForms() {
+        return this.repository.findDistinctDosageForms();
     }
 }

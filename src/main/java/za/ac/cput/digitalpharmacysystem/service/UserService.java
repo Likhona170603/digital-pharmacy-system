@@ -29,13 +29,28 @@ public class UserService implements IUserService {
         return repository.findById(id).orElse(null);
     }
 
+
     @Override
     public User update(User user) {
-        if (repository.existsById(user.getId())) {
-            return repository.save(user);
+        if (user == null || user.getId() == null) {
+            return null;
         }
-        return null;
+
+        User existing = repository.findById(user.getId()).orElse(null);
+
+        if (existing == null) {
+            return null;
+        }
+
+        User updated = new User.Builder()
+                .copy(existing)
+                .setFullName(user.getFullName())
+                .setPhone(user.getPhone())
+                .build();
+
+        return repository.save(updated);
     }
+
 
     @Override
     public boolean delete(Long id) {
