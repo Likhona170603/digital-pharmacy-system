@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap');
+/* Shared by every page: design tokens, base type, buttons, logo (matches the homepage design) */
+.hp{--ink:#14283f;--mute:#566b82;--line:#d9e6f7;--bg:#fff;--tint:#f5f9ff;--teal:#1459c7;--teal-d:#0b2f63;--teal-s:#e8f2ff;--coral:#bd3248;--amber:#fff2d6;--amber-ink:#9a6200;--green:#07855d;--green-s:#e2f7ee;--rose-s:#ffe9ec;--blue-hover:#0f47a8;--sky:#6db3ff;--ice:#cfe5ff;--ph-ink:#071b3a;--shadow-soft:0 14px 34px rgba(11,47,99,.08);--shadow-lift:0 22px 44px rgba(20,89,199,.18);--display:"Playfair Display",Georgia,"Times New Roman",serif;font-family:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);font-size:16px;line-height:1.6}
+.hp *{box-sizing:border-box}
+.hp button{font:inherit;cursor:pointer}
+.hp h1,.hp h2,.hp h3{font-family:"Playfair Display",Georgia,serif;letter-spacing:-.01em;line-height:1.15;margin:0}
+.hp :focus-visible{outline:3px solid #1459c744;outline-offset:2px}
+.hp-brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font:600 24px "Playfair Display",Georgia,serif;white-space:nowrap}
+.hp-brand b{color:var(--teal);font-weight:600}
+.hp-mark{width:34px;height:34px;border-radius:9px;background:var(--teal);color:#fff;display:grid;place-items:center;font:700 20px system-ui}
+.hp-text-btn{background:none;border:0;color:var(--teal-d);font-weight:600;padding:6px 0}
+.hp-text-btn:hover{text-decoration:underline}
+.hp-btn{border:1.5px solid transparent;border-radius:10px;padding:10px 18px;font-weight:600;font-size:15px;transition:background .15s,border-color .15s}
+.hp-btn-primary{background:var(--teal);color:#fff}.hp-btn-primary:hover{background:var(--blue-hover)}
+.hp-btn-ghost{background:#fff;border-color:#d5dfed;color:var(--ink)}.hp-btn-ghost:hover{border-color:var(--teal)}
+.hp-btn-light{background:#fff;color:var(--teal-d)}.hp-btn-light:hover{background:var(--teal-s)}
+.hp-btn-lg{padding:14px 24px;font-size:16px}
+.hp-btn-small{padding:7px 12px;font-size:13.5px;background:var(--teal-s);color:var(--teal-d)}.hp-btn-small:hover{background:#d6e4ff}
+@media(prefers-reduced-motion:reduce){.hp *{transition:none!important}}
+
+/* ===== Homepage look shared by all inner pages ===== */
+.hp h1,.hp h2,.hp h3{font-family:var(--display);font-weight:700;letter-spacing:-.01em}
+.hp-brand{font:700 24px var(--display)}
+.hp-mark{background:linear-gradient(145deg,#2f80f2,#1459c7)}
+/* pill buttons with the homepage lift */
+.hp-btn{border-radius:999px;padding:11px 22px;font-weight:600;transition:transform .2s ease,box-shadow .2s ease,background .2s ease,border-color .2s ease}
+.hp-btn:hover:not(:disabled){transform:translateY(-2px)}
+.hp-btn-primary{box-shadow:0 10px 24px rgba(20,89,199,.28)}
+.hp-btn-primary:hover:not(:disabled){box-shadow:0 14px 30px rgba(20,89,199,.34)}
+.hp-btn-ghost{border:1.5px solid var(--ice);color:var(--teal-d);background:#fff}
+.hp-btn-ghost:hover{border-color:var(--teal);background:var(--teal-s)}
+.hp-btn-light{box-shadow:0 10px 28px rgba(3,18,45,.22)}
+.hp-btn-small{background:var(--teal-s);color:var(--teal-d)}.hp-btn-small:hover{background:var(--ice)}
+.hp-text-btn{color:var(--teal);font-weight:700}
+.hp :focus-visible{outline:3px solid var(--sky);outline-offset:3px}
+/* inputs */
+.hp :where(input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea){border-radius:14px}
+.hp input:focus,.hp select:focus,.hp textarea:focus{border-color:var(--teal);box-shadow:0 0 0 4px rgba(47,128,242,.16)}
+@media(prefers-reduced-motion:reduce){.hp-btn:hover:not(:disabled){transform:none}}
+
+
+/* Readability baseline */
+body { color: #111827; }
+button, input, select, textarea { color: #111827; }
+small, label, th, td, .hp-text-btn, .au-sub { color: #111827; }

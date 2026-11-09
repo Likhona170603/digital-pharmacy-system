@@ -1,0 +1,34 @@
+/* Log in and Create account pages */
+.au{background:var(--tint);padding:56px 24px 80px;display:flex;justify-content:center}
+.au-wrap{width:100%;max-width:980px;display:grid;grid-template-columns:.8fr 1.2fr;background:#fff;border:1px solid var(--line);border-radius:22px;overflow:hidden}
+.au-side{background:var(--teal-d);color:#fff;padding:40px 34px;display:flex;flex-direction:column;gap:22px}
+.au-side .hp-mark{background:var(--teal)}
+.au-side h2{font-size:30px;font-weight:600;line-height:1.2}
+.au-side ul{list-style:none;margin:auto 0 0;padding:0;display:flex;flex-direction:column;gap:12px;color:#c7d6ea;font-size:15px}
+.au-side li:before{content:"✓";color:#8fb3ff;font-weight:800;margin-right:10px}
+.au-card{padding:40px 40px 34px}
+.au-card h1{font-size:32px;font-weight:600;margin-bottom:6px}
+.au-sub{color:var(--mute);margin:0 0 24px}
+.au-field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.au-field label{font-weight:600;font-size:14px}
+.au-field input{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;font:inherit;font-size:15px;background:#fbfcfe;color:var(--ink)}
+.au-field input:focus{outline:none;border-color:var(--teal);background:#fff;box-shadow:0 0 0 3px #1459c71f}
+.au-two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.au-opt,.au-hint{font-weight:400;color:var(--mute);font-size:13px}
+.au-hint{color:var(--coral)}
+.au-pass{position:relative}
+.au-pass input{padding-right:70px}
+.au-pass button{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--teal);font-weight:700;font-size:13px;padding:6px 8px}
+.au-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:2px 0 18px;font-size:14px}
+.au-check{display:flex;gap:10px;align-items:flex-start;font-size:14px;cursor:pointer}
+.au-check input{accent-color:var(--teal);width:16px;height:16px;margin-top:3px;flex:none}
+.au-terms{color:var(--mute);margin-top:4px}
+.au-staff{font-size:13px;color:var(--mute);margin:12px 0 18px}
+.au-message{background:var(--teal-s);color:var(--teal-d);border-radius:10px;padding:12px 14px;font-size:14px;margin-bottom:14px}
+.au-error{background:var(--rose-s);color:#8c2234}
+.au-submit{width:100%}
+.au-switch{text-align:center;color:var(--mute);margin:20px 0 0;font-size:15px}
+.au-switch .hp-text-btn{font-size:15px}
+.au-secure{text-align:center;color:var(--mute);font-size:13px;margin:14px 0 0}
+@media(max-width:800px){.au-wrap{grid-template-columns:1fr}.au-side{padding:28px}.au-side ul{margin-top:0}.au-card{padding:30px 22px}.au-two{grid-template-columns:1fr}}
+@media(max-width:700px){.au{padding:32px 14px 56px}}

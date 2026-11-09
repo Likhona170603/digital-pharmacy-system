@@ -1,0 +1,25 @@
+/* Contact page only (form fields reuse auth.css) */
+.ct{background:var(--tint);padding:56px max(24px,calc((100% - 1192px)/2)) 80px}
+.ct-intro{max-width:760px}
+.ct-intro h1{font-size:clamp(36px,5vw,54px);font-weight:600;margin:20px 0 14px}
+.ct-intro p{font-size:18px;color:var(--mute);margin:0;max-width:60ch}
+.ct-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:28px;margin-top:36px;align-items:start}
+.ct-form{background:#fff;border:1px solid var(--line);border-radius:20px;padding:32px}
+.ct-form h2{font-size:26px;font-weight:600;margin-bottom:20px}
+.ct-two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.ct-form select,.ct-form textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;font:inherit;font-size:15px;background:#fbfcfe;color:var(--ink);resize:vertical}
+.ct-form select:focus,.ct-form textarea:focus{outline:none;border-color:var(--teal);background:#fff;box-shadow:0 0 0 3px #1459c71f}
+.ct-side{display:flex;flex-direction:column;gap:14px}
+.ct-card{display:flex;gap:16px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+.ct-card>span{flex:none;width:44px;height:44px;border-radius:12px;background:var(--teal-s);color:var(--teal);display:grid;place-items:center;font-size:20px}
+.ct-card h3,.ct-hours h3{font:700 16px "Figtree","Segoe UI",system-ui,sans-serif;margin:0 0 2px;letter-spacing:0}
+.ct-card p{margin:0;font-weight:600}.ct-card small{color:var(--mute);font-size:13.5px}
+.ct-hours{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+.ct-hours dl{margin:10px 0 0}
+.ct-hours dl div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--line);font-size:14.5px}
+.ct-hours dt{color:var(--mute)}.ct-hours dd{margin:0;font-weight:600}
+.ct-urgent{background:var(--rose-s);color:#8c2234;border-radius:14px;padding:14px 18px;font-size:14px}
+.ct-faq{display:grid;grid-template-columns:.7fr 1.3fr;gap:48px;margin-top:72px}
+.ct-faq h2{font-size:clamp(26px,3vw,34px);font-weight:600}
+@media(max-width:1000px){.ct-grid{grid-template-columns:1fr}.ct-faq{grid-template-columns:1fr;gap:12px}}
+@media(max-width:700px){.ct{padding:40px 16px 56px}.ct-two{grid-template-columns:1fr}.ct-form{padding:24px 18px}}

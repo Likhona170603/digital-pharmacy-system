@@ -1,0 +1,74 @@
+/* ==========================================================================
+   Homepage theme layer. Imported LAST in App.jsx so it wins over page CSS.
+   Palette + type come from homepage.css (Playfair Display / Figtree, royal
+   blues, pill buttons, soft blue shadows, 24px cards, gradient bands).
+   ========================================================================== */
+:root{
+  --t-ink:#071b3a;--t-deep:#0b2f63;--t-royal:#1459c7;--t-blue:#2f80f2;--t-sky:#6db3ff;
+  --t-ice:#cfe5ff;--t-mist:#e8f2ff;--t-frost:#f5f9ff;--t-text:#14283f;--t-muted:#566b82;--t-border:#d9e6f7;
+  --t-display:"Playfair Display",Georgia,"Times New Roman",serif;
+  --t-shadow:0 14px 34px rgba(11,47,99,.08);
+  --t-band:radial-gradient(60% 90% at 100% 0%,rgba(109,179,255,.4),transparent 60%),linear-gradient(135deg,#071b3a,#0b2f63 60%,#1459c7);
+}
+
+/* ---------- Page canvases: homepage "tint" section gradient ---------- */
+.ab,.ct,.au{background:linear-gradient(180deg,var(--t-frost),var(--t-mist))}
+.orders-page,.cart-page,.prescriptions-page{color:var(--t-text)}
+
+/* ---------- Page titles ---------- */
+.ab-intro h1,.ct-intro h1,.orders-page h1,.cart-page>h1,.prescriptions-header h1{
+  font-family:var(--t-display);font-weight:700;letter-spacing:-.015em;color:var(--t-deep);line-height:1.08}
+.ab-split h2,.ab-head h2,.ct-form h2,.cart-checkout-form h2,.prescription-panel h2,.prescription-list-section h2,.au-card h1,.au-card h2{
+  font-family:var(--t-display);font-weight:700;color:var(--t-deep)}
+.ab-facts strong{font-weight:700}
+
+/* eyebrow pills / labels */
+.ab-pill,.ct-pill{background:#fff;color:var(--t-royal);box-shadow:inset 0 0 0 1.5px var(--t-ice)}
+.prescriptions-eyebrow{color:var(--t-royal);letter-spacing:1.6px}
+
+/* ---------- Cards: 24px radius, soft blue shadow ---------- */
+.ab-card,.ab-details,.ab-facts,.ab-journey li,.ab-standards li,.ct-form,.ct-card,.cart-item,.cart-summary,.cart-checkout-form,.orders-card,.orders-empty,.prescription-panel,.prescription-card,.prescription-empty{
+  background:#fff;border:1px solid var(--t-border);border-radius:24px;box-shadow:var(--t-shadow)}
+.ab-standards li,.ct-card{border-radius:20px}
+.cart-item-icon{border-radius:18px;background:linear-gradient(135deg,var(--t-mist),var(--t-ice))}
+.ab-icon,.ct-card>span{border-radius:16px;background:linear-gradient(135deg,var(--t-mist),var(--t-ice));color:var(--t-royal)}
+.ab-step{background:var(--t-deep)}
+
+/* ---------- Gradient bands (homepage CTA / Rx band look) ---------- */
+.ab-cta{border-radius:36px;background:var(--t-band);padding:48px 52px}
+.ab-cta h2{color:#fff}
+.ab-cta p{color:#d6e7ff}
+.au-wrap{border-radius:32px;box-shadow:0 24px 60px rgba(11,47,99,.14);border-color:var(--t-border)}
+.au-side{background:var(--t-band)}
+.au-side h2{color:#fff;font-family:var(--t-display);font-weight:700}
+.au-side .hp-mark{background:rgba(255,255,255,.18)}
+.au-side li:before{color:var(--t-sky)}
+
+/* ---------- Controls: pills + soft focus ring ---------- */
+.cart-quantity{border-radius:999px;border-color:var(--t-border)}
+.au-field input,.ct-form select,.ct-form textarea,.cart-checkout-form textarea,.prescription-form input,.prescription-form select{
+  border-radius:14px;border-color:var(--t-border);background:var(--t-frost)}
+.au-field input:focus,.ct-form select:focus,.ct-form textarea:focus,.cart-checkout-form textarea:focus,.prescription-form input:focus,.prescription-form select:focus{
+  outline:none;border-color:var(--t-royal);background:#fff;box-shadow:0 0 0 4px rgba(47,128,242,.16)}
+.au-message,.orders-message,.prescription-alert,.cart-message{border-radius:14px}
+.orders-badge{border-radius:999px}
+.cart-summary button,.cart-checkout-form button,.prescription-form button{border-radius:999px}
+
+/* ---------- Dashboards (Admin / Pharmacist / Courier) ---------- */
+.ad-app,.courier,.ph-workspace{font-family:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--t-frost)}
+.ad-app h1,.ad-app h2,.courier h1,.courier h2,.ph-workspace h1,.ph-workspace h2{
+  font-family:var(--t-display);font-weight:700;letter-spacing:-.01em;color:var(--t-deep)}
+.ad-topbar,.cr-topbar,.ph-topbar{box-shadow:0 4px 18px rgba(11,47,99,.05)}
+.ad-brand,.cr-brand,.ph-brand{font-family:var(--t-display);font-weight:700;color:var(--t-deep)}
+.ad-mark,.cr-mark{border-radius:12px;background:linear-gradient(145deg,#2f80f2,#1459c7);color:#fff;box-shadow:0 5px 12px #1459c729}
+.ad-panel,.cr-panel,.ph-panel,.ad-stat,.cr-stat,.ph-stat-card{
+  border-radius:22px;border-color:var(--t-border);box-shadow:var(--t-shadow)}
+.ad-stat-icon,.cr-stat-icon,.ph-stat-icon{border-radius:14px}
+.ad-btn,.cr-btn,.ph-btn{border-radius:999px;transition:transform .2s ease,box-shadow .2s ease,background .2s ease}
+.ad-btn:hover,.cr-btn:hover,.ph-btn:hover{transform:translateY(-1px)}
+.ad-primary,.cr-primary,.ph-btn-primary{box-shadow:0 8px 18px rgba(20,89,199,.26)}
+.ad-status-select,.ad-app select,.ad-app input,.courier select,.courier input,.ph-workspace select,.ph-workspace input{border-radius:12px}
+.ad-table th,.cr-table th,.ph-table-wrap th{color:var(--t-muted);background:var(--t-frost)}
+
+/* Toast (App.jsx inline style) uses the same deep blue */@media(prefers-reduced-motion:reduce){
+.ad-btn,.cr-btn,.ph-btn{transition:none;transform:none}}

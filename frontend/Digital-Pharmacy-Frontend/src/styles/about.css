@@ -1,0 +1,43 @@
+/* About page only */
+.ab{background:var(--tint);padding:56px max(24px,calc((100% - 1192px)/2)) 80px}
+.ab-intro{max-width:860px}
+.ab-pill{display:inline-block;background:var(--teal-s);color:var(--teal);font-weight:700;font-size:13px;padding:7px 14px;border-radius:99px}
+.ab-intro h1{font-size:clamp(38px,5vw,58px);font-weight:600;margin:22px 0 18px}
+.ab-intro p{font-size:19px;color:var(--mute);margin:0;max-width:58ch}
+.ab-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:40px}
+.ab-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px 24px}
+.ab-icon{width:54px;height:54px;border-radius:14px;background:var(--teal-s);color:var(--teal);display:grid;place-items:center;font-size:22px;margin-bottom:22px}
+.ab-card h2{font:700 18px "Figtree","Segoe UI",system-ui,sans-serif;margin-bottom:6px;letter-spacing:0}
+.ab-card p{margin:0;color:var(--mute);font-size:15px}
+.ab-split{display:grid;grid-template-columns:1.25fr .75fr;gap:48px;margin-top:72px;align-items:start}
+.ab-split h2,.ab-head h2,.ab-cta h2{font-size:clamp(26px,3vw,34px);font-weight:600}
+.ab-split p{color:var(--mute);margin:16px 0 0;max-width:62ch}
+.ab-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.ab-details{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px 28px}
+.ab-details h3{font:700 18px "Figtree","Segoe UI",system-ui,sans-serif;margin-bottom:6px}
+.ab-details dl{margin:0}
+.ab-details dl div{padding:13px 0;border-bottom:1px solid var(--line)}
+.ab-details dl div:last-child{border:0;padding-bottom:0}
+.ab-details dt{font-size:13px;color:var(--mute)}
+.ab-details dd{margin:2px 0 0;font-weight:600}
+.ab-facts{display:grid;grid-template-columns:repeat(4,1fr);margin-top:64px;background:#fff;border:1px solid var(--line);border-radius:18px}
+.ab-facts div{padding:26px 24px;border-right:1px solid var(--line)}
+.ab-facts div:last-child{border:0}
+.ab-facts strong{display:block;font:600 28px "Playfair Display",Georgia,serif;color:var(--teal-d)}
+.ab-facts span{display:block;margin-top:6px;color:var(--mute);font-size:14.5px;line-height:1.4}
+.ab-block{margin-top:72px}
+.ab-head{margin-bottom:28px}
+.ab-head p{margin:10px 0 0;color:var(--mute)}
+.ab-journey{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.ab-journey li{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px}
+.ab-step{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--teal);color:#fff;font-weight:700;font-size:14px;margin-bottom:14px}
+.ab-journey small{display:block;color:var(--teal);font-weight:700;font-size:13px}
+.ab-journey h3{font:700 18px "Figtree","Segoe UI",system-ui,sans-serif;margin:2px 0 8px}
+.ab-journey p{margin:0;color:var(--mute);font-size:15px}
+.ab-standards ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.ab-standards li{display:flex;gap:14px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.ab-standards li span{flex:none;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--green-s);color:var(--green);font-weight:800;font-size:14px}
+.ab-cta{margin-top:72px;border-radius:20px;background:var(--teal-d);color:#fff;padding:40px 44px;display:flex;align-items:center;justify-content:space-between;gap:28px}
+.ab-cta p{margin:10px 0 0;color:#c7d6ea;max-width:52ch}
+@media(max-width:1000px){.ab-cards{grid-template-columns:repeat(2,1fr)}.ab-split{grid-template-columns:1fr;gap:32px}.ab-facts{grid-template-columns:repeat(2,1fr)}.ab-facts div:nth-child(2){border-right:0}.ab-facts div:nth-child(-n+2){border-bottom:1px solid var(--line)}.ab-journey{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.ab{padding:40px 16px 56px}.ab-cards,.ab-journey,.ab-standards ul{grid-template-columns:1fr}.ab-facts{grid-template-columns:1fr}.ab-facts div{border-right:0;border-bottom:1px solid var(--line)}.ab-facts div:last-child{border:0}.ab-cta{flex-direction:column;align-items:flex-start;padding:30px 24px}}

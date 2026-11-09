@@ -1,0 +1,31 @@
+/* Site footer */
+.hp-footer{background:var(--teal-d);color:#b9cbe0;margin-top:40px}
+.hp-foot-grid{max-width:1240px;margin:auto;padding:52px 24px 30px;display:grid;grid-template-columns:1.4fr 1fr 1fr 1.2fr;gap:36px}
+.hp-footer .hp-brand{color:#fff}.hp-footer .hp-brand b{color:#8fb3ff}
+.hp-footer p{font-size:14.5px;max-width:34ch}
+.hp-footer h4{color:#fff;margin:0 0 12px;font-size:15px}
+.hp-footer button{display:block;background:none;border:0;color:#b9cbe0;padding:4px 0;font-size:14.5px}
+.hp-footer button:hover{color:#fff;text-decoration:underline}
+.hp-footer span{display:block;font-size:14.5px;padding:4px 0}
+.hp-legal{max-width:1240px;margin:auto;padding:18px 24px 26px;border-top:1px solid #ffffff1f;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:12.5px;color:#9db1ca}
+.hp-legal span{padding:0}
+@media(max-width:1000px){.hp-foot-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.hp-foot-grid{grid-template-columns:1fr}}
+
+/* ===== Homepage look: deep-blue gradient band with soft sky glow ===== */
+.hp-footer{margin-top:72px;border-radius:36px 36px 0 0;color:#cfe3ff;font-family:"Figtree",system-ui,sans-serif;
+  background:radial-gradient(60% 90% at 100% 0%,rgba(109,179,255,.32),transparent 60%),radial-gradient(45% 70% at 0% 100%,rgba(47,128,242,.28),transparent 65%),linear-gradient(135deg,#071b3a,#0b2f63 60%,#1459c7)}
+.hp-foot-grid{max-width:1200px;padding:64px 24px 36px;gap:44px}
+.hp-footer .hp-brand{font:700 26px "Playfair Display",Georgia,serif;color:#fff}
+.hp-footer .hp-brand b{color:#6db3ff}
+.hp-footer .hp-mark{background:#fff;color:#1459c7;box-shadow:0 10px 24px rgba(3,18,45,.3)}
+.hp-footer p{color:#bcd8ff;line-height:1.65;margin:16px 0 0}
+.hp-footer h4{font:700 18px "Playfair Display",Georgia,serif;color:#fff;margin:0 0 14px}
+.hp-footer button{color:#bcd8ff;padding:5px 0;transition:color .2s ease,transform .2s ease}
+.hp-footer button:hover{color:#fff;text-decoration:none;transform:translateX(4px)}
+.hp-footer span{color:#bcd8ff}
+.hp-legal{max-width:1200px;border-top:1px solid rgba(255,255,255,.16);color:#9fc2f2;padding:20px 24px 30px}
+@media(prefers-reduced-motion:reduce){.hp-footer button{transition:none}.hp-footer button:hover{transform:none}}
+
+/* Square corners */
+.hp-footer{border-radius:0}
