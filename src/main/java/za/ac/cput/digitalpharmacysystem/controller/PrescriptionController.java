@@ -2,9 +2,11 @@ package za.ac.cput.digitalpharmacysystem.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import za.ac.cput.digitalpharmacysystem.domain.Prescription;
+import za.ac.cput.digitalpharmacysystem.domain.User;
 import za.ac.cput.digitalpharmacysystem.service.IPrescriptionService;
 
 import java.util.List;
@@ -91,13 +93,13 @@ public class PrescriptionController {
     public ResponseEntity<Prescription> approve(
             @PathVariable String id,
             @RequestParam(defaultValue = "1") int refills,
-            @RequestParam(required = false) String verifiedBy) {
+            Authentication authentication) {
 
         return ResponseEntity.ok(
                 service.approvePrescription(
                         id,
                         refills,
-                        verifiedBy
+                        ((User) authentication.getPrincipal()).getFullName()
                 )
         );
     }
@@ -106,13 +108,13 @@ public class PrescriptionController {
     public ResponseEntity<Prescription> reject(
             @PathVariable String id,
             @RequestParam String reason,
-            @RequestParam(required = false) String verifiedBy) {
+            Authentication authentication) {
 
         return ResponseEntity.ok(
                 service.rejectPrescription(
                         id,
                         reason,
-                        verifiedBy
+                        ((User) authentication.getPrincipal()).getFullName()
                 )
         );
     }
@@ -121,13 +123,13 @@ public class PrescriptionController {
     public ResponseEntity<Prescription> clarify(
             @PathVariable String id,
             @RequestParam String reason,
-            @RequestParam(required = false) String verifiedBy) {
+            Authentication authentication) {
 
         return ResponseEntity.ok(
                 service.requestClarification(
                         id,
                         reason,
-                        verifiedBy
+                        ((User) authentication.getPrincipal()).getFullName()
                 )
         );
     }

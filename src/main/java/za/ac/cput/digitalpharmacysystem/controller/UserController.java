@@ -3,6 +3,7 @@ package za.ac.cput.digitalpharmacysystem.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import za.ac.cput.digitalpharmacysystem.dto.CustomerNameDto;
 import za.ac.cput.digitalpharmacysystem.domain.User;
 import za.ac.cput.digitalpharmacysystem.service.IUserService;
 
@@ -57,5 +58,10 @@ public class UserController {
     @GetMapping("/getAll")
     public ResponseEntity<List<User>> getAll() {
         return ResponseEntity.ok(userService.getAll());
+    }
+
+    @GetMapping("/names")
+    public ResponseEntity<List<CustomerNameDto>> getCustomerNames() {
+        return ResponseEntity.ok(userService.getCustomerNames());
     }
 }

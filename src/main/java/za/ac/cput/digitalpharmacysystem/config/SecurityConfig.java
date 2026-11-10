@@ -31,8 +31,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
-                        .requestMatchers("/auth/**", "/index/**", "/public/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**", "/product/**").permitAll()
+                        
+                        .requestMatchers("/digitalpharmacysystem/auth/**", "/index/**", "/public/**").permitAll()
+.requestMatchers(HttpMethod.GET,
+        "/digitalpharmacysystem/product/**",
+        "/digitalpharmacysystem/category/**").permitAll()
 
                         // Customer / Patient endpoints
                         .requestMatchers(HttpMethod.POST, "/orders/place", "/prescription/upload").hasAnyRole("CUSTOMER", "PATIENT")
@@ -41,11 +44,15 @@ public class SecurityConfig {
                         // Pharmacist endpoints
                         .requestMatchers("/prescription/{id}/approve", "/prescription/{id}/reject", "/prescription/{id}/clarify").hasRole("PHARMACIST")
                         .requestMatchers("/orders/{id}/pack").hasAnyRole("PHARMACIST", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/digitalpharmacysystem/order/{id}/collect")
+                                .hasAnyRole("PHARMACIST", "ADMIN")
 
                         // Courier endpoints
                         .requestMatchers("/delivery/courier/**", "/delivery/{id}/status").hasRole("COURIER")
 
                         // Admin endpoints
+                        .requestMatchers(HttpMethod.GET, "/digitalpharmacysystem/user/names")
+                                .hasAnyRole("PHARMACIST", "ADMIN")
                         .requestMatchers("/user/create", "/user/all", "/user/{id}/delete").hasRole("ADMIN")
                         .requestMatchers("/audit-log/**").hasRole("ADMIN")
 
