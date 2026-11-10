@@ -1,3 +1,4 @@
+
 package za.ac.cput.digitalpharmacysystem.service;
 
 import io.jsonwebtoken.Claims;
@@ -45,11 +46,11 @@ public class JwtService {
     }
 
     public Claims extractClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(signingKey)
+        return Jwts.parser()
+                .verifyWith(signingKey)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     public boolean isTokenValid(String token, User user) {
