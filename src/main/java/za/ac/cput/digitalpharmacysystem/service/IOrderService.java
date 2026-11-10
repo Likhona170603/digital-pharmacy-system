@@ -34,6 +34,8 @@ public interface IOrderService {
 
     List<Order> getAll();
 
+    List<Order> getOrdersForCurrentUser();
+
     /** Order history for one customer, newest first. */
     List<Order> getByCustomer(String customerId);
 

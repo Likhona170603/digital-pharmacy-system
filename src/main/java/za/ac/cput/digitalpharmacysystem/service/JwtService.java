@@ -36,20 +36,20 @@ public class JwtService {
         Date expiry = new Date(now.getTime() + expirationMs);
 
         return Jwts.builder()
-                .claims(claims)
-                .subject(user.getEmail())
-                .issuedAt(now)
-                .expiration(expiry)
+                .setClaims(claims)
+                .setSubject(user.getEmail())
+                .setIssuedAt(now)
+                .setExpiration(expiry)
                 .signWith(signingKey)
                 .compact();
     }
 
     public Claims extractClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(signingKey)
+        return Jwts.parserBuilder()
+                .setSigningKey(signingKey)
                 .build()
-                .parseSignedClaims(token)
-                .getPayload();
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     public boolean isTokenValid(String token, User user) {

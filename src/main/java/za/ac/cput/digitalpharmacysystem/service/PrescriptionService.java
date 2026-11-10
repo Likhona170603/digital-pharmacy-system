@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import za.ac.cput.digitalpharmacysystem.domain.Prescription;
 import za.ac.cput.digitalpharmacysystem.domain.RefillTracker;
+import za.ac.cput.digitalpharmacysystem.domain.User;
 import za.ac.cput.digitalpharmacysystem.domain.VerificationStatus;
 import za.ac.cput.digitalpharmacysystem.factory.RefillTrackerFactory;
 import za.ac.cput.digitalpharmacysystem.repository.IPrescriptionRepository;
@@ -17,6 +18,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @Service
 public class PrescriptionService
         implements IPrescriptionService {
@@ -26,19 +29,34 @@ public class PrescriptionService
     // RefillTrackerService already depends on this service.
     private final IRefillTrackerRepository refillRepository;
     private final IAuditLogService auditLogService;
-    private final ActorContext actorContext;
+
 
     public PrescriptionService(
             IPrescriptionRepository repository,
             IRefillTrackerRepository refillRepository,
-            IAuditLogService auditLogService,
-            ActorContext actorContext) {
-
+            IAuditLogService auditLogService) {
         this.repository = repository;
         this.refillRepository = refillRepository;
         this.auditLogService = auditLogService;
-        this.actorContext = actorContext;
     }
+    @Override
+    public List<Prescription> getPrescriptionsForCurrentUser() {
+        User currentUser = ActorContext.getCurrentUser();
+        if (currentUser == null) {
+            throw new RuntimeException("User is not authenticated.");
+        }
+
+        String role = currentUser.getRole() != null ? currentUser.getRole().name() : "";
+
+        // Admin and Pharmacist can see all prescriptions
+        if ("ADMIN".equalsIgnoreCase(role) || "PHARMACIST".equalsIgnoreCase(role)) {
+            return repository.findAll();
+        }
+
+        // Customers can only see their own prescriptions by patientId
+        return repository.findByPatientId(currentUser.getId().toString());
+    }
+
 
     @Override
     public Prescription create(Prescription prescription) {
@@ -207,21 +225,21 @@ public class PrescriptionService
     private void stamp(Prescription prescription, String verifiedBy) {
         String by = verifiedBy;
 
-        if (Helper.isNullOrEmpty(by) && actorContext.getActorId() != null) {
-            by = String.valueOf(actorContext.getActorId());
+        if (Helper.isNullOrEmpty(by) && ActorContext.getCurrentUser() != null) {
+            by = String.valueOf(ActorContext.getCurrentUser().getId());
         }
 
         prescription.setVerifiedBy(by);
         prescription.setVerifiedAt(LocalDateTime.now());
     }
 
-    private Prescription findOrThrow(String id) {
-        Prescription prescription = read(id);
-        if (prescription == null) {
-            throw new NoSuchElementException(
-                    "Prescription not found: " + id
-            );
+    private Prescription findOrThrow(String id){
+            Prescription prescription = read(id);
+            if (prescription == null) {
+                throw new NoSuchElementException(
+                        "Prescription not found: " + id
+                );
+            }
+            return prescription;
         }
-        return prescription;
     }
-}

@@ -14,7 +14,7 @@ import java.util.List;
 public interface IDeliveryService extends IService<Delivery, String> {
     Delivery findByOrderNumber(String orderNumber);
     List<Delivery> getCourierManifest(Long courierId);
-
+    List<Delivery> getDeliveriesForCurrentUser();
     /**
      * Moves a delivery forward: PACKED -> DISPATCHED -> (IN_TRANSIT) -> DELIVERED.
      * Dispatching needs an assigned courier; DELIVERED needs the recipient's name.

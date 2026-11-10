@@ -7,6 +7,7 @@ import za.ac.cput.digitalpharmacysystem.domain.*;
 import za.ac.cput.digitalpharmacysystem.repository.DeliveryRepository;
 import za.ac.cput.digitalpharmacysystem.repository.IOrderRepository;
 import za.ac.cput.digitalpharmacysystem.repository.UserRepository;
+import za.ac.cput.digitalpharmacysystem.util.ActorContext;
 import za.ac.cput.digitalpharmacysystem.util.Helper;
 
 import java.time.LocalDateTime;
@@ -51,6 +52,25 @@ public class DeliveryService implements IDeliveryService{
             return this.repository.findById(id).orElse(null);
         }
 
+    @Override
+    public List<Delivery> getDeliveriesForCurrentUser() {
+        User currentUser = ActorContext.getCurrentUser();
+        if (currentUser == null) {
+            throw new RuntimeException("User is not authenticated.");
+        }
+
+        String role = currentUser.getRole() != null ? currentUser.getRole().name() : "";
+
+        // Admin and Pharmacist can see all deliveries
+        if ("ADMIN".equalsIgnoreCase(role) || "PHARMACIST".equalsIgnoreCase(role)) {
+            return repository.findAll();
+        }
+
+        // Couriers can only see deliveries assigned to them
+        // (Make sure your deliveryRepository has a method matching this query,
+        // e.g. findByCourierId or findByCourier_UserId)
+        return repository.findByCourier_Id(currentUser.getId());
+    }
         @Override
         public Delivery update(Delivery delivery) {
             if (this.repository.existsById(delivery.getId())) {

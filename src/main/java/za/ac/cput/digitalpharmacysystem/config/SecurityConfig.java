@@ -4,12 +4,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -21,37 +26,33 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/digitalpharmacysystem/auth/register",
-                                "/digitalpharmacysystem/auth/login"
-                        ).permitAll()
+                        // Public endpoints
+                        .requestMatchers("/auth/**", "/index/**", "/public/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**", "/product/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET,
-                                "/digitalpharmacysystem/product/catalogue",
-                                "/digitalpharmacysystem/product/rx",
-                                "/digitalpharmacysystem/product/otc",
-                                "/digitalpharmacysystem/category/getAll",
-                                "/digitalpharmacysystem/category/read/**",
-                                "/digitalpharmacysystem/category/search",
-                                "/digitalpharmacysystem/category/dosageforms"
-                        ).permitAll()
+                        // Customer / Patient endpoints
+                        .requestMatchers(HttpMethod.POST, "/orders/place", "/prescription/upload").hasAnyRole("CUSTOMER", "PATIENT")
+                        .requestMatchers("/patient-profile/**").hasAnyRole("CUSTOMER", "PATIENT", "ADMIN")
 
-                        .requestMatchers(
-                                "/digitalpharmacysystem/product/**",
-                                "/digitalpharmacysystem/category/**"
-                        ).hasAnyRole("ADMIN", "PHARMACIST")
+                        // Pharmacist endpoints
+                        .requestMatchers("/prescription/{id}/approve", "/prescription/{id}/reject", "/prescription/{id}/clarify").hasRole("PHARMACIST")
+                        .requestMatchers("/orders/{id}/pack").hasAnyRole("PHARMACIST", "ADMIN")
 
+                        // Courier endpoints
+                        .requestMatchers("/delivery/courier/**", "/delivery/{id}/status").hasRole("COURIER")
+
+                        // Admin endpoints
+                        .requestMatchers("/user/create", "/user/all", "/user/{id}/delete").hasRole("ADMIN")
+                        .requestMatchers("/audit-log/**").hasRole("ADMIN")
+
+                        // Any other request requires authentication
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(
-                        jwtAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class
-                );
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

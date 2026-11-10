@@ -3,9 +3,8 @@ package za.ac.cput.digitalpharmacysystem.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import za.ac.cput.digitalpharmacysystem.domain.AuditLog;
+import za.ac.cput.digitalpharmacysystem.domain.User;
 import za.ac.cput.digitalpharmacysystem.repository.AuditLogRepository;
-
-import za.ac.cput.digitalpharmacysystem.service.IAuditLogService;
 import za.ac.cput.digitalpharmacysystem.util.ActorContext;
 
 import java.time.LocalDateTime;
@@ -13,36 +12,47 @@ import java.util.List;
 import java.util.UUID;
 
 /*
- * Sesona Ntshatsha
- * 240773365
-
- */
+- Sesona Ntshatsha
+- 240773365
+*/
 
 @Service
 public class AuditLogService implements IAuditLogService {
 
     private final AuditLogRepository repository;
-    private final ActorContext actorContext;
 
     @Autowired
-    public AuditLogService(AuditLogRepository repository, ActorContext actorContext) {
+    public AuditLogService(AuditLogRepository repository) {
         this.repository = repository;
-        this.actorContext = actorContext;
     }
 
     @Override
     public AuditLog record(String action, String entityTarget, String entityId) {
+        User currentUser = ActorContext.getCurrentUser();
+
+        String actorId = "SYSTEM";
+        if (currentUser != null && currentUser.getId() != null) {
+            actorId = currentUser.getId().toString();
+        }
+
+        String actorRole = "SYSTEM";
+        if (currentUser != null && currentUser.getRole() != null) {
+            actorRole = currentUser.getRole().name();
+        }
+
         AuditLog entry = new AuditLog.Builder()
                 .setId(UUID.randomUUID().toString())
                 .setAction(action)
                 .setEntityTarget(entityTarget)
                 .setEntityId(entityId)
-                .setActorId(actorContext.getActorId())
-                .setActorRole(actorContext.getActorRole())
+                .setActorId(Long.valueOf(actorId))
+                .setActorRole(actorRole)
                 .setTimeStamp(LocalDateTime.now())
                 .build();
+
         return this.repository.save(entry);
     }
+
     @Override
     public AuditLog create(AuditLog auditLog) {
         return this.repository.save(auditLog);
@@ -75,6 +85,4 @@ public class AuditLogService implements IAuditLogService {
         return this.repository.findAll();
     }
 }
-
-
 

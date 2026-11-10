@@ -1,5 +1,6 @@
 package za.ac.cput.digitalpharmacysystem.service;
 
+import za.ac.cput.digitalpharmacysystem.domain.Delivery;
 import za.ac.cput.digitalpharmacysystem.domain.Prescription;
 
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 public interface IPrescriptionService extends IService<Prescription, String> {
 
     List<Prescription> getByPatientId(String patientId);
-
+    List<Prescription> getPrescriptionsForCurrentUser();
     List<Prescription> getPendingPrescriptions();
 
     /**

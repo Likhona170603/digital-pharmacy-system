@@ -12,6 +12,7 @@ import za.ac.cput.digitalpharmacysystem.dto.PlaceOrderRequest;
 import za.ac.cput.digitalpharmacysystem.factory.OrderItemFactory;
 import za.ac.cput.digitalpharmacysystem.repository.DeliveryRepository;
 import za.ac.cput.digitalpharmacysystem.repository.OrderRepository;
+import za.ac.cput.digitalpharmacysystem.util.ActorContext;
 import za.ac.cput.digitalpharmacysystem.util.Helper;
 
 import java.math.BigDecimal;
@@ -41,6 +42,24 @@ public class OrderService implements IOrderService {
         this.prescriptionService = prescriptionService;
         this.refillTrackerService = refillTrackerService;
         this.auditLogService = auditLogService;
+    }
+    @Override
+    public List<Order> getOrdersForCurrentUser() {
+        User currentUser = ActorContext.getCurrentUser();
+        if (currentUser == null) {
+            throw new RuntimeException("User is not authenticated.");
+        }
+
+        // Check user role
+        String role = currentUser.getRole() != null ? currentUser.getRole().name() : "";
+
+        // Admin and Pharmacist can see all orders
+        if ("ADMIN".equalsIgnoreCase(role) || "PHARMACIST".equalsIgnoreCase(role)) {
+            return repository.findAll();
+        }
+
+        // Customer/Patient can only see their own orders
+        return repository.findByCustomerId(currentUser.getId().toString());
     }
 
     @Override
