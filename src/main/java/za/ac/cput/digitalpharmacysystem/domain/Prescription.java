@@ -1,5 +1,10 @@
 package za.ac.cput.digitalpharmacysystem.domain;
 
+/*
+ * Likhona Noroyita
+ * 230154239
+ */
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
