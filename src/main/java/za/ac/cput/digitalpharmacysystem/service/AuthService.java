@@ -87,7 +87,7 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(InvalidCredentialsException::new);
 
-        if (!passwordEncoder.matches(
+        if (!user.isActive() || !passwordEncoder.matches(
                 request.password(), user.getPasswordHash())) {
             throw new InvalidCredentialsException();
         }

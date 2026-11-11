@@ -2,9 +2,13 @@ package za.ac.cput.digitalpharmacysystem.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import za.ac.cput.digitalpharmacysystem.domain.RefillTracker;
+import za.ac.cput.digitalpharmacysystem.domain.Prescription;
+import za.ac.cput.digitalpharmacysystem.domain.User;
+import za.ac.cput.digitalpharmacysystem.service.IPrescriptionService;
 import za.ac.cput.digitalpharmacysystem.service.IRefillTrackerService;
 
 import java.util.List;
@@ -14,11 +18,14 @@ import java.util.List;
 public class RefillTrackerController {
 
     private final IRefillTrackerService service;
+    private final IPrescriptionService prescriptionService;
 
     public RefillTrackerController(
-            IRefillTrackerService service) {
+            IRefillTrackerService service,
+            IPrescriptionService prescriptionService) {
 
         this.service = service;
+        this.prescriptionService = prescriptionService;
     }
 
     @PostMapping
@@ -36,13 +43,16 @@ public class RefillTrackerController {
 
     @GetMapping("/{id}")
     public ResponseEntity<RefillTracker> read(
-            @PathVariable String id) {
+            @PathVariable String id, Authentication authentication) {
 
         RefillTracker tracker =
                 service.read(id);
 
         if (tracker == null) {
             return ResponseEntity.notFound().build();
+        }
+        if (!canAccessPrescription(authentication, tracker.getPrescriptionId())) {
+            return ResponseEntity.status(403).build();
         }
 
         return ResponseEntity.ok(tracker);
@@ -59,7 +69,10 @@ public class RefillTrackerController {
     @GetMapping("/prescription/{prescriptionId}")
     public ResponseEntity<RefillTracker>
     getByPrescriptionId(
-            @PathVariable String prescriptionId) {
+            @PathVariable String prescriptionId, Authentication authentication) {
+        if (!canAccessPrescription(authentication, prescriptionId)) {
+            return ResponseEntity.status(403).build();
+        }
 
         RefillTracker tracker =
                 service.getByPrescriptionId(
@@ -88,7 +101,10 @@ public class RefillTrackerController {
 
     @GetMapping("/eligible/{prescriptionId}")
     public ResponseEntity<Boolean> checkEligibility(
-            @PathVariable String prescriptionId) {
+            @PathVariable String prescriptionId, Authentication authentication) {
+        if (!canAccessPrescription(authentication, prescriptionId)) {
+            return ResponseEntity.status(403).build();
+        }
 
         return ResponseEntity.ok(
                 service.isRefillEligible(
@@ -99,7 +115,10 @@ public class RefillTrackerController {
 
     @PostMapping("/process/{prescriptionId}")
     public ResponseEntity<RefillTracker> processRefill(
-            @PathVariable String prescriptionId) {
+            @PathVariable String prescriptionId, Authentication authentication) {
+        if (!canAccessPrescription(authentication, prescriptionId)) {
+            return ResponseEntity.status(403).build();
+        }
 
         return ResponseEntity.ok(
                 service.processRefill(
@@ -117,5 +136,19 @@ public class RefillTrackerController {
         }
 
         return ResponseEntity.noContent().build();
+    }
+
+    private boolean canAccessPrescription(Authentication authentication, String prescriptionId) {
+        User user = authentication != null && authentication.getPrincipal() instanceof User currentUser
+                ? currentUser : null;
+        if (user == null) {
+            return false;
+        }
+        if (user.getRole() == User.UserRole.ADMIN || user.getRole() == User.UserRole.PHARMACIST) {
+            return true;
+        }
+        Prescription prescription = prescriptionService.read(prescriptionId);
+        return user.getRole() == User.UserRole.CUSTOMER && prescription != null
+                && String.valueOf(user.getId()).equals(prescription.getPatientId());
     }
 }

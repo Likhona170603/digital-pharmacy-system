@@ -33,6 +33,9 @@ public class User implements Serializable{
     @Column(nullable = false)
     private UserRole role;
 
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean active = true;
+
     public enum UserRole {
         CUSTOMER, PHARMACIST, COURIER, ADMIN
     }
@@ -46,6 +49,7 @@ public class User implements Serializable{
         this.passwordHash = builder.passwordHash;
         this.phone = builder.phone;
         this.role = builder.role;
+        this.active = builder.active;
     }
 
     public Long getId() { return id; }
@@ -54,6 +58,7 @@ public class User implements Serializable{
     public String getPasswordHash() { return passwordHash; }
     public String getPhone() { return phone; }
     public UserRole getRole() { return role; }
+    public boolean isActive() { return active; }
 
     public static class Builder {
         private Long id;
@@ -62,6 +67,7 @@ public class User implements Serializable{
         private String passwordHash;
         private String phone;
         private UserRole role;
+        private boolean active = true;
 
         public Builder setId(Long id) { this.id = id; return this; }
         public Builder setFullName(String fullName) { this.fullName = fullName; return this; }
@@ -69,6 +75,7 @@ public class User implements Serializable{
         public Builder setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; return this; }
         public Builder setPhone(String phone) { this.phone = phone; return this; }
         public Builder setRole(UserRole role) { this.role = role; return this; }
+        public Builder setActive(boolean active) { this.active = active; return this; }
 
         public Builder copy(User user) {
             this.id = user.id;
@@ -77,6 +84,7 @@ public class User implements Serializable{
             this.passwordHash = user.passwordHash;
             this.phone = user.phone;
             this.role = user.role;
+            this.active = user.active;
             return this;
         }
 

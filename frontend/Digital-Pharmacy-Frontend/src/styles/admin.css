@@ -9,6 +9,9 @@
 .ad-modal .ad-check input{display:inline-block;width:auto;margin:0}
 .ad-error{padding:12px 14px;border-radius:10px;background:var(--ad-rb);color:var(--ad-red);font-size:12px;margin:0 0 16px}
 .ad-btn:disabled{opacity:.55;cursor:not-allowed}
+.ad-staff-form{border:1px solid var(--ad-line);border-radius:12px;padding:14px;margin:0 0 16px;background:#f8faff}
+.ad-staff-form label{display:block;font-size:11px;color:var(--ad-muted)}
+.ad-staff-form input,.ad-staff-form select{display:block;width:100%;margin-top:6px;border:1px solid var(--ad-line);border-radius:9px;padding:10px;font-size:12px;color:var(--ad-ink);background:white}
 @media(max-width:650px){.ad-modal .ad-two{grid-template-columns:1fr}}
 
 /* Improve dashboard readability and show actual product thumbnails */

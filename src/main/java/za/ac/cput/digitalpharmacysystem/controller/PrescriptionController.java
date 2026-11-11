@@ -3,10 +3,12 @@ package za.ac.cput.digitalpharmacysystem.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import za.ac.cput.digitalpharmacysystem.domain.Prescription;
 import za.ac.cput.digitalpharmacysystem.domain.User;
+import za.ac.cput.digitalpharmacysystem.domain.VerificationStatus;
 import za.ac.cput.digitalpharmacysystem.service.IPrescriptionService;
 
 import java.util.List;
@@ -25,10 +27,15 @@ public class PrescriptionController {
 
     @PostMapping
     public ResponseEntity<Prescription> create(
-            @RequestBody Prescription prescription) {
+            @RequestBody Prescription prescription,
+            Authentication authentication) {
 
-        Prescription created =
-                service.create(prescription);
+        User user = currentUser(authentication);
+        if (user == null || user.getRole() != User.UserRole.CUSTOMER) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        Prescription ownedPrescription = copyForPatient(prescription, String.valueOf(user.getId()));
+        Prescription created = service.create(ownedPrescription);
 
         return new ResponseEntity<>(
                 created,
@@ -38,13 +45,16 @@ public class PrescriptionController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Prescription> read(
-            @PathVariable String id) {
+            @PathVariable String id, Authentication authentication) {
 
         Prescription prescription =
                 service.read(id);
 
         if (prescription == null) {
             return ResponseEntity.notFound().build();
+        }
+        if (!canReviewAll(authentication) && !owns(authentication, prescription)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         return ResponseEntity.ok(prescription);
@@ -60,7 +70,10 @@ public class PrescriptionController {
 
     @GetMapping("/patient/{patientId}")
     public ResponseEntity<List<Prescription>> getByPatientId(
-            @PathVariable String patientId) {
+            @PathVariable String patientId, Authentication authentication) {
+        if (!canReviewAll(authentication) && !ownsPatient(authentication, patientId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         return ResponseEntity.ok(
                 service.getByPatientId(patientId)
@@ -143,5 +156,39 @@ public class PrescriptionController {
         }
 
         return ResponseEntity.noContent().build();
+    }
+
+    private User currentUser(Authentication authentication) {
+        return authentication != null && authentication.getPrincipal() instanceof User user ? user : null;
+    }
+
+    private boolean canReviewAll(Authentication authentication) {
+        User user = currentUser(authentication);
+        return user != null && (user.getRole() == User.UserRole.ADMIN
+                || user.getRole() == User.UserRole.PHARMACIST);
+    }
+
+    private boolean owns(Authentication authentication, Prescription prescription) {
+        return ownsPatient(authentication, prescription.getPatientId());
+    }
+
+    private boolean ownsPatient(Authentication authentication, String patientId) {
+        User user = currentUser(authentication);
+        return user != null && user.getRole() == User.UserRole.CUSTOMER
+                && String.valueOf(user.getId()).equals(patientId);
+    }
+
+    private Prescription copyForPatient(Prescription prescription, String patientId) {
+        return new Prescription.Builder()
+                .setPrescriptionId(prescription.getPrescriptionId())
+                .setPatientId(patientId)
+                .setFilePath(prescription.getFilePath())
+                .setIssuedDate(prescription.getIssuedDate())
+                .setVerificationStatus(VerificationStatus.PENDING)
+                .setRejectionReason(null)
+                .setProductId(prescription.getProductId())
+                .setVerifiedBy(null)
+                .setVerifiedAt(null)
+                .build();
     }
 }

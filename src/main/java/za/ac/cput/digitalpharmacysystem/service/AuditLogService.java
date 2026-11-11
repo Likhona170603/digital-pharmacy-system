@@ -30,11 +30,6 @@ public class AuditLogService implements IAuditLogService {
     public AuditLog record(String action, String entityTarget, String entityId) {
         User currentUser = ActorContext.getCurrentUser();
 
-        String actorId = "SYSTEM";
-        if (currentUser != null && currentUser.getId() != null) {
-            actorId = currentUser.getId().toString();
-        }
-
         String actorRole = "SYSTEM";
         if (currentUser != null && currentUser.getRole() != null) {
             actorRole = currentUser.getRole().name();
@@ -45,7 +40,7 @@ public class AuditLogService implements IAuditLogService {
                 .setAction(action)
                 .setEntityTarget(entityTarget)
                 .setEntityId(entityId)
-                .setActorId(Long.valueOf(actorId))
+                .setActorId(currentUser != null ? currentUser.getId() : null)
                 .setActorRole(actorRole)
                 .setTimeStamp(LocalDateTime.now())
                 .build();
@@ -85,4 +80,3 @@ public class AuditLogService implements IAuditLogService {
         return this.repository.findAll();
     }
 }
-

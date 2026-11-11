@@ -10,7 +10,7 @@ const badge = value => /delivered|collected|active|paid/i.test(value) ? 'green' 
 const dateTime = value => value ? new Date(value).toLocaleString() : '—';
 
 function normaliseUser(user) {
-  return { ...user, name: user.fullName || user.name || 'Unnamed user', role: label(user.role), status: 'Registered' };
+  return { ...user, active: user.active !== false, name: user.fullName || user.name || 'Unnamed user', role: label(user.role), status: user.active === false ? 'Suspended' : 'Active' };
 }
 function normaliseOrder(order) {
   return {
@@ -39,6 +39,10 @@ export default function AdminDashboard({ onExit }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [busyOrder, setBusyOrder] = useState('');
+  const [staffForm, setStaffForm] = useState({ fullName: '', email: '', phone: '', password: '', role: 'PHARMACIST' });
+  const [creatingStaff, setCreatingStaff] = useState(false);
+  const [staffSaving, setStaffSaving] = useState(false);
+  const [busyUser, setBusyUser] = useState('');
   const { inventory, categories, loading: inventoryLoading, error: inventoryError, reload: reloadInventory } = useInventory();
   const currentUser = getStoredUser();
 
@@ -115,6 +119,38 @@ export default function AdminDashboard({ onExit }) {
     }
   }
 
+  async function createStaff(event) {
+    event.preventDefault();
+    setStaffSaving(true);
+    setError('');
+    try {
+      await api.post('/user/staff', staffForm);
+      setStaffForm({ fullName: '', email: '', phone: '', password: '', role: 'PHARMACIST' });
+      setCreatingStaff(false);
+      notify(`${label(staffForm.role)} account created.`);
+      await load();
+    } catch (err) {
+      setError(err.message || 'Could not create the staff account.');
+    } finally {
+      setStaffSaving(false);
+    }
+  }
+
+  async function setUserActive(user) {
+    setBusyUser(String(user.id));
+    setError('');
+    try {
+      const active = !user.active;
+      await api.patch(`/user/${encodeURIComponent(String(user.id))}/active?active=${active}`, {});
+      notify(`${user.name} account ${active ? 'activated' : 'suspended'}.`);
+      await load();
+    } catch (err) {
+      setError(err.message || 'Could not update the account status.');
+    } finally {
+      setBusyUser('');
+    }
+  }
+
   const navItems = [['Overview','▦'],['User Management','♙'],['Inventory','▤'],['Orders & Deliveries','↗'],['Audit Log','≡'],['Reports','▥']];
   return <div className="ad-app">
     <header className="ad-topbar">
@@ -136,7 +172,7 @@ export default function AdminDashboard({ onExit }) {
         <section className="ad-overview-grid"><article className="ad-panel"><div className="ad-panel-head"><div><h2>Inventory alerts</h2><p>Products at or below their reorder level</p></div><button className="ad-link" onClick={()=>setTab('Inventory')}>View inventory →</button></div>{activeInventory.filter(p=>p.stock<=p.reorder).map(p=><div className="ad-alert-row" key={p.id}><span className="ad-alert-icon"><img src={`/images/products/${String(p.id || '').toUpperCase()}.webp`} alt="" onError={event=>{event.currentTarget.style.display='none';}}/></span><div><strong>{p.name}</strong><small>{p.stock} units remaining · reorder at {p.reorder}</small></div><span className="ad-badge red">Low stock</span></div>)}{lowStock===0&&<p className="ad-muted">{inventoryLoading?'Loading inventory…':'No low-stock items.'}</p>}</article>
           <article className="ad-panel"><div className="ad-panel-head"><div><h2>Recent system activity</h2><p>Latest audit records from the backend</p></div><button className="ad-link" onClick={()=>setTab('Audit Log')}>View audit log →</button></div>{audit.slice(0,4).map(a=><div className="ad-activity" key={a.id}><span className="ad-activity-dot"/><div><strong>{a.action || 'System activity'}</strong><small>{a.actorRole || 'User'} #{a.actorId ?? '—'} · {a.entityTarget || '—'} {a.entityId || ''}</small></div><time>{dateTime(a.timeStamp)}</time></div>)}{!audit.length&&<p className="ad-muted">{loading?'Loading activity…':'No audit records returned.'}</p>}</article></section>
           <section className="ad-panel"><div className="ad-panel-head"><div><h2>Recent orders</h2><p>Live operational overview</p></div><button className="ad-link" onClick={()=>setTab('Orders & Deliveries')}>Manage orders →</button></div><OrderTable orders={orders} updateOrder={updateOrder} busyOrder={busyOrder} compact /></section></>}
-        {tab==='User Management'&&<section className="ad-panel"><div className="ad-panel-head"><div><h2>User accounts</h2><p>Registered accounts returned by the backend.</p></div><span className="ad-badge blue">{users.length} users</span></div><div className="ad-toolbar"><input placeholder="Search name, email, ID…" value={query} onChange={e=>setQuery(e.target.value)}/><select value={roleFilter} onChange={e=>setRoleFilter(e.target.value)}><option>All roles</option><option>Customer</option><option>Pharmacist</option><option>Courier</option><option>Admin</option></select></div><div className="ad-table-wrap"><table className="ad-table"><thead><tr><th>User</th><th>Email</th><th>Role</th><th>Account</th></tr></thead><tbody>{filteredUsers.map(u=><tr key={u.id}><td><strong>{u.name}</strong><small>{u.id}</small></td><td>{u.email}</td><td>{u.role}</td><td><span className="ad-badge blue">Registered</span></td></tr>)}</tbody></table>{!filteredUsers.length&&<div className="ad-empty">{loading?'Loading users…':'No users match this search.'}</div>}</div><p className="ad-footnote">Account suspension is not exposed by the current backend API, so this screen does not simulate it.</p></section>}
+        {tab==='User Management'&&<section className="ad-panel"><div className="ad-panel-head"><div><h2>User accounts</h2><p>Create staff logins and activate or suspend accounts.</p></div><div className="ad-action-group"><span className="ad-badge blue">{users.length} users</span><button className="ad-btn ad-primary" onClick={()=>setCreatingStaff(value=>!value)}>{creatingStaff?'Cancel':'Add staff account'}</button></div></div>{creatingStaff&&<form className="ad-staff-form" onSubmit={createStaff}><div className="ad-form-grid ad-two"><label>Full name<input required maxLength="120" value={staffForm.fullName} onChange={e=>setStaffForm({...staffForm,fullName:e.target.value})}/></label><label>Email<input required type="email" value={staffForm.email} onChange={e=>setStaffForm({...staffForm,email:e.target.value})}/></label><label>Phone<input value={staffForm.phone} onChange={e=>setStaffForm({...staffForm,phone:e.target.value})}/></label><label>Temporary password<input required type="password" minLength="8" maxLength="72" value={staffForm.password} onChange={e=>setStaffForm({...staffForm,password:e.target.value})}/></label><label>Staff role<select value={staffForm.role} onChange={e=>setStaffForm({...staffForm,role:e.target.value})}><option value="PHARMACIST">Pharmacist</option><option value="COURIER">Courier</option></select></label></div><div className="ad-modal-actions"><button type="submit" className="ad-btn ad-primary" disabled={staffSaving}>{staffSaving?'Creating…':'Create account'}</button></div></form>}<div className="ad-toolbar"><input placeholder="Search name, email, ID…" value={query} onChange={e=>setQuery(e.target.value)}/><select value={roleFilter} onChange={e=>setRoleFilter(e.target.value)}><option>All roles</option><option>Customer</option><option>Pharmacist</option><option>Courier</option><option>Admin</option></select></div><div className="ad-table-wrap"><table className="ad-table"><thead><tr><th>User</th><th>Email</th><th>Role</th><th>Account</th><th>Actions</th></tr></thead><tbody>{filteredUsers.map(u=><tr key={u.id}><td><strong>{u.name}</strong><small>{u.id}</small></td><td>{u.email}</td><td>{u.role}</td><td><span className={`ad-badge ${u.active?'green':'red'}`}>{u.status}</span></td><td><button className="ad-btn ad-small" disabled={busyUser===String(u.id) || u.id===currentUser?.id} onClick={()=>setUserActive(u)}>{busyUser===String(u.id)?'Saving…':u.active?'Suspend':'Activate'}</button></td></tr>)}</tbody></table>{!filteredUsers.length&&<div className="ad-empty">{loading?'Loading users…':'No users match this search.'}</div>}</div><p className="ad-footnote">Suspended users cannot log in, and their existing JWT sessions are rejected.</p></section>}
         {tab==='Inventory'&&<InventoryPanel inventory={inventory} categories={categories} loading={inventoryLoading} error={inventoryError} onReload={reloadInventory} notify={notify} money={money}/>}
         {tab==='Orders & Deliveries'&&<><section className="ad-panel"><div className="ad-panel-head"><div><h2>Courier assignment</h2><p>Assign packed delivery orders to a registered courier. Packing remains a pharmacist-only action.</p></div><button className="ad-btn ad-ghost" onClick={load} disabled={loading}>Refresh</button></div>
           {deliveryLoading ? <div className="ad-empty">Loading deliveries…</div> : <div className="ad-table-wrap"><table className="ad-table"><thead><tr><th>Delivery</th><th>Order</th><th>Address</th><th>Status</th><th>Assigned courier</th><th>Assign</th></tr></thead><tbody>{deliveries.map(d=>{const id=d.id ?? d.deliveryId; const status=String(d.status || d.deliveryStatus || '').toUpperCase(); const assigned=d.courierId ?? d.courier?.id; const eligible=['PACKED','PENDING','READY_FOR_DELIVERY','AWAITING_COURIER'].includes(status); return <tr key={id}><td><strong>{id ?? '—'}</strong></td><td>{d.order?.orderNumber ?? d.orderNumber ?? d.orderId ?? '—'}</td><td style={{whiteSpace:'normal',minWidth:180}}>{d.address || d.deliveryAddress || d.streetAddress || 'Address not supplied'}</td><td><span className={`ad-badge ${badge(status)}`}>{label(status)}</span></td><td>{assigned ? (users.find(u=>String(u.id)===String(assigned))?.name || `Courier #${assigned}`) : 'Unassigned'}</td><td><div className="ad-action-group"><select aria-label={`Choose courier for delivery ${id}`} value={courierChoices[String(id)] || ''} onChange={e=>setCourierChoices(old=>({...old,[String(id)]:e.target.value}))} disabled={!eligible || Boolean(assigned)}><option value="">Choose courier</option>{couriers.map(c=><option key={c.id} value={c.id}>{c.name} · #{c.id}</option>)}</select><button className="ad-btn ad-small" disabled={!eligible || Boolean(assigned) || !courierChoices[String(id)] || assigningDelivery===String(id)} onClick={()=>assignCourier(d)}>{assigningDelivery===String(id)?'Assigning…':'Assign delivery'}</button></div></td></tr>})}</tbody></table>{!deliveries.length&&<div className="ad-empty">No delivery records returned by the backend. Check GET /delivery/getall.</div>}</div>}

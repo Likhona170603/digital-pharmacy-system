@@ -16,6 +16,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     boolean existsByEmail(String email);
+    long countByRoleAndActiveTrue(User.UserRole role);
 
     @Query("select new za.ac.cput.digitalpharmacysystem.dto.CustomerNameDto(u.id, u.fullName) " +
             "from User u where u.role = :role")
